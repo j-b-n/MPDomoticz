@@ -1,0 +1,50 @@
+<window>
+  <id>7616</id>
+  <defaultcontrol>50</defaultcontrol>
+  <allowoverlay>yes</allowoverlay>
+  <disabletopbar>yes</disabletopbar>
+  
+  <controls>    
+ <!-- ********************** BACKGROUNDS************************************** -->
+    	
+	<include>MP-Domoticz.background.default.xml</include>	
+	
+	<control>
+      <id>0</id>
+      <type>image</type>
+      <posX>66</posX>
+      <posY>34</posY>
+      <width>61</width>
+      <height>57</height>
+      <texture>Domoticz/icon.png</texture>     
+      <animation effect="fade" time="250">WindowOpen</animation>
+      <animation effect="fade" time="250">WindowClose</animation>
+    </control>
+    	
+    <import>common.time.xml</import>   
+
+	<include>MP-Domoticz.hiddenmenu.xml</include>   
+
+	<include>MP-Domoticz.views.default.xml</include>	
+    
+	
+	<control>
+			<id>1</id>
+			<type>image</type>
+			<posX>0</posX>
+			<posY>440</posY>
+			<width>64</width>
+			<height>199</height>
+			<texture>hiddenmenu_tab.png</texture>
+			<visible>Control.HasFocus(50) + !string.contains(#Titan.HiddenMenu, false)</visible>
+			<animation effect="slide" start="-60,0" end="0,0" tween="quadratic" easing="in" time="250" delay="400">WindowOpen</animation>
+			<animation effect="slide" start="0,0" end="-60,0" tween="quadratic" easing="in" time="250" delay="100">WindowClose</animation>
+	</control>
+		
+    <import>common.overlay.xml</import>
+    
+	<include>MP-Domoticz.facade.default.xml</include>	
+    
+  </controls>
+  
+</window>

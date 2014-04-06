@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<window>
+  <controls>    
+
+  <control>
+    <description>List Lines</description>
+    <type>image</type>
+    <id>1</id>
+	<posX>1222</posX>
+	<posY>385</posY>
+    <width>607</width>
+    <height>506</height>
+    <texture>list_lines.png</texture>
+    <animation effect="fade" time="250">WindowOpen</animation>
+	<animation effect="fade" time="250">WindowClose</animation>
+  </control>
+
+	
+  <control>
+        <id>50</id>
+        <description>list devices</description>
+        <type>listcontrol</type>        
+        <onleft>5</onleft>
+		<onright>5</onright>
+        <posX>1165</posX>
+        <posY>331</posY>
+        <width>698</width>
+        <height>700</height>
+        <scrollOffset>1</scrollOffset>
+		<textureFocus>listcontrol_item_selected.png</textureFocus>
+    	<textureNoFocus>-</textureNoFocus>
+		
+		<textXOff>10</textXOff>
+        <textYOff>8</textYOff>
+		<textXOff2>670</textXOff2>
+        <textYOff2>8</textYOff2>
+        <textXOff3>663</textXOff3>
+        <textYOff3>14</textYOff3>
+        <font3>font2</font3>
+		<textpadding>45</textpadding>
+        <itemWidth>32</itemWidth>
+        <itemHeight>32</itemHeight>
+        <IconXOff>10</IconXOff>
+        <IconYOff>10</IconYOff>
+        <textureHeight>54</textureHeight>
+    	<dimColor>ffffffff</dimColor>
+        <spinPosX>1828</spinPosX>
+        <spinPosY>1000</spinPosY>
+		
+		<animation effect="fade" time="250">WindowOpen</animation>
+	    <animation effect="fade" time="250">WindowClose</animation>
+      </control>
+     	
+  </controls>
+</window>
