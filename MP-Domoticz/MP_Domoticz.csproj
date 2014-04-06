@@ -109,12 +109,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DomoticzLib\DomoticzLib.csproj">
-      <Project>{319f271d-c669-4b17-a51f-d6278c9f54df}</Project>
-      <Name>DomoticzLib</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Skin\Titan\Media\Domoticz\add.png" />
     <Content Include="Skin\Titan\Media\Domoticz\adjust48.png" />
     <Content Include="Skin\Titan\Media\Domoticz\air.png" />

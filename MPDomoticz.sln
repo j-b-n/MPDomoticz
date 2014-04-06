@@ -5,10 +5,6 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MP_Domoticz", "MP-Domoticz\MP_Domoticz.csproj", "{78E6FCDB-2A95-4B9B-A11D-8695652DFB81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console-Domoticz", "Console-Domoticz\Console-Domoticz.csproj", "{CFCEBA36-2AD3-42F3-B214-D9CFA7365658}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomoticzLib", "DomoticzLib\DomoticzLib.csproj", "{319F271D-C669-4B17-A51F-D6278C9F54DF}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,14 +15,6 @@ Global
 		{78E6FCDB-2A95-4B9B-A11D-8695652DFB81}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78E6FCDB-2A95-4B9B-A11D-8695652DFB81}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78E6FCDB-2A95-4B9B-A11D-8695652DFB81}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CFCEBA36-2AD3-42F3-B214-D9CFA7365658}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CFCEBA36-2AD3-42F3-B214-D9CFA7365658}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CFCEBA36-2AD3-42F3-B214-D9CFA7365658}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CFCEBA36-2AD3-42F3-B214-D9CFA7365658}.Release|Any CPU.Build.0 = Release|Any CPU
-		{319F271D-C669-4B17-A51F-D6278C9F54DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{319F271D-C669-4B17-A51F-D6278C9F54DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{319F271D-C669-4B17-A51F-D6278C9F54DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{319F271D-C669-4B17-A51F-D6278C9F54DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
