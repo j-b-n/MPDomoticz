@@ -54,7 +54,10 @@ namespace MP_Domoticz
         public static string All = "All";
         public static string Dewpoint = "Dewpoint";
         public static string Gust = "Gust"; 
-        public static string Status = "Status";  
+        public static string Status = "Status";
+        public static string Servertime = "Servertime";
+        public static string Sunrise = "Sunrise";
+        public static string Sunset = "Sunset";  
 
         #endregion
 

@@ -474,11 +474,11 @@ namespace MP_Domoticz
 
 
             DomoticzServer.SunSetRise sun = currentDomoticzServer.GetSunSet();
-            string str = "Servertime:" + sun.ServerTime + " " +
-                "SunRise: " + sun.Sunrise + " " +
-                "SunSet:" + sun.Sunset;            
+            string str = Translation.Servertime +": "+ sun.ServerTime + " " +
+                Translation.Sunrise+ ": " + sun.Sunrise + " " +
+                Translation.Sunset + ": " + sun.Sunset;            
 
-            GUIPropertyManager.SetProperty("#MPDomoticz.ServerTime", "ServerTime: " + sun.ServerTime);
+            GUIPropertyManager.SetProperty("#MPDomoticz.ServerTime", str);
             
             if (listDevices != null)
             {
