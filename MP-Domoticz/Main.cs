@@ -600,6 +600,11 @@ namespace MP_Domoticz
             }
         }
 
+        /// <summary>
+        /// Return a string to the current appropriate temperature icon
+        /// </summary>
+        /// <param name="temp"></param>
+        /// <returns></returns>
         string GetTempIcon(double temp)
         {
             string skinName = MediaPortal.Configuration.Config.SkinName;
