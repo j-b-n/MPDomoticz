@@ -1,5 +1,6 @@
 ﻿using MediaPortal.Dialogs;
 using MediaPortal.GUI.Library;
+using MediaPortal.Profile;
 using System;
 using System.IO;
 using System.Windows.Forms;
@@ -85,6 +86,9 @@ namespace MP_Domoticz
 
         #region private properties
         private DomoticzServer currentDomoticzServer = null;
+        private string _serveradress = "";
+        private string _serverport = "";
+
         private bool IsNetworkAvailable = false;
         private DomoticzServer.DeviceResponse DevResponse = null;
         private DateTime RefreshTime = DateTime.Now.AddHours(-1); //for autorefresh
@@ -224,6 +228,36 @@ namespace MP_Domoticz
 
         #endregion
 
+        #region Serialisation
+
+
+        private void LoadSettings()
+        {
+            using (Settings xmlreader = new MPSettings())
+            {                
+                _serveradress = xmlreader.GetValueAsString("MPDomoticz", "ServerAdress", "localhost");
+                _serverport = xmlreader.GetValueAsString("MPDomoticz", "ServerPort", "8080");
+                RefreshInterval = xmlreader.GetValueAsInt("MPDomoticz", "RefreshInterval", 30);
+            }
+        }
+
+
+        private void SaveSettings()
+        {
+            using (Settings xmlwriter = new MPSettings())
+            {
+                xmlwriter.SetValue("MPDomoticz", "ServerAdress", _serveradress);
+                xmlwriter.SetValue("MPDomoticz", "ServerPort", _serverport);
+                xmlwriter.SetValue("MPDomoticz", "RefreshInterval", RefreshInterval);
+                
+            }
+        }
+
+
+        #endregion
+
+
+
         #region UI
         /// <summary>
         /// Init the plugin
@@ -269,6 +303,8 @@ namespace MP_Domoticz
                     {
                         //Log.Info("MP-Domoticz: GUI_MSG_WINDOW_INIT");
 
+                        LoadSettings();
+
                         #region Translations
 
                         Translation.Init();
@@ -301,7 +337,7 @@ namespace MP_Domoticz
                         Refresh();
                         UpdateButtons();
 
-                        //LoadSettings();
+                        
                         // m_pSiteImage = (GUIImage)GetControl((int)Controls.CONTROL_IMAGELOGO);
 
                         return true;
@@ -345,7 +381,6 @@ namespace MP_Domoticz
                             break;
                         }
 
-
                         if (iControl == (int)Controls.CONTROL_BTNREFRESH)
                         {
                             Refresh();
@@ -353,8 +388,7 @@ namespace MP_Domoticz
                         }
 
                         if (iControl == (int)Controls.CONTROL_CHECKBTN)
-                        {
-                            Log.Info("MP-Domoticz: GUI_MSG_CLICKED TOGGLE CHECKBUTTON");
+                        {                            
                             OnToggleSwitchCmd();
                             break;
                         }
@@ -423,6 +457,7 @@ namespace MP_Domoticz
             DomoticzServer.Device device = (DomoticzServer.Device)item.MusicTag;
 
             string desc = "";
+            listDevices.NavigateLeft = 5;
 
             switch (device.Type)
             {
@@ -454,6 +489,14 @@ namespace MP_Domoticz
                     desc = Translation.Status + ": " + device.Status;
                     btnCheckButton.Label = Translation.Status;
                     btnCheckButton.Visible = true;
+                    if (device.Status == "On")
+                    {
+                        btnCheckButton.Selected = true;
+                    } else
+                    {
+                        btnCheckButton.Selected = false;
+                    }
+                    listDevices.NavigateLeft = 10;
                     break;
 
                 case "Rain":
@@ -481,7 +524,7 @@ namespace MP_Domoticz
             if (currentDomoticzServer == null)
             {
                 currentDomoticzServer = new DomoticzServer();
-                currentDomoticzServer.InitServer("192.168.1.6", "8080");
+                currentDomoticzServer.InitServer(_serveradress,_serverport);
             }
 
             DevResponse = null;
@@ -660,7 +703,7 @@ namespace MP_Domoticz
             string poster = skinPath + "\\Media\\Domoticz\\" + dev.TypeImg + "48.png";
             string thumb = skinPath + "\\Media\\Domoticz\\" + dev.TypeImg + ".png";
 
-            GUIListItem item = new GUIListItem(dev.Name);
+            GUIListItem item = new GUIListItem(dev.Name);            
 
             switch (dev.Type)
             {
@@ -738,7 +781,6 @@ namespace MP_Domoticz
                 Log.Info("OnToggleSwitch - not possible to toggle: "+device.Name);
                 return;
             }
-
 
             if (device.Status == "On")
             {

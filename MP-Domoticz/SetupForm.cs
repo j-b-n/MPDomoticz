@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MediaPortal.Profile;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,9 +13,66 @@ namespace MP_Domoticz
 {
     public partial class SetupForm : Form
     {
+        private string _serveradress = "";
+        private string _serverport = "";
+        private int RefreshInterval = 0;
+
         public SetupForm()
         {
             InitializeComponent();
+            LoadSettings();
+            textBox1.Text = _serveradress;
+            textBox2.Text = _serverport;
+            if (RefreshInterval < 5)
+            {
+                RefreshInterval = 5;
+            }
+            numericUpDown1.Value = RefreshInterval;
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //Save settings
+            _serveradress = textBox1.Text;
+            _serverport = textBox2.Text;
+            RefreshInterval = (int)numericUpDown1.Value;
+
+            SaveSettings();
+            this.Close();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        #region Serialisation
+
+
+        private void LoadSettings()
+        {
+            using (Settings xmlreader = new MPSettings())
+            {
+                _serveradress = xmlreader.GetValueAsString("MPDomoticz", "ServerAdress", "localhost");
+                _serverport = xmlreader.GetValueAsString("MPDomoticz", "ServerPort", "8080");
+                RefreshInterval = xmlreader.GetValueAsInt("MPDomoticz", "RefreshInterval", 30);
+            }
+        }
+
+
+        private void SaveSettings()
+        {
+            using (Settings xmlwriter = new MPSettings())
+            {
+                xmlwriter.SetValue("MPDomoticz", "ServerAdress", _serveradress);
+                xmlwriter.SetValue("MPDomoticz", "ServerPort", _serverport);
+                xmlwriter.SetValue("MPDomoticz", "RefreshInterval", RefreshInterval);
+            }
+        }
+
+
+        #endregion        
+
+
     }
 }
