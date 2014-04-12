@@ -103,12 +103,21 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="SetupForm.resx">
       <DependentUpon>SetupForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domoticz_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Domoticz_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Domoticz-icon.png" />
+    <Content Include="Resources\Domoticz_icon.png" />
     <Content Include="Skin\Titan\Media\Domoticz\add.png" />
     <Content Include="Skin\Titan\Media\Domoticz\adjust48.png" />
     <Content Include="Skin\Titan\Media\Domoticz\air.png" />

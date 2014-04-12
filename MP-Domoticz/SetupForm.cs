@@ -1,4 +1,5 @@
-﻿using MediaPortal.Profile;
+﻿using MediaPortal.Configuration;
+using MediaPortal.Profile;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,7 +13,8 @@ using System.Windows.Forms;
 namespace MP_Domoticz
 {
     public partial class SetupForm : Form
-    {
+    {        
+        [PluginIcons("MPDomoticz.Domoticz_icon.png", "MPDomoticz.Domoticz_icon.png")]
         private string _serveradress = "";
         private string _serverport = "";
         private int RefreshInterval = 0;

@@ -1,4 +1,5 @@
-﻿using MediaPortal.Dialogs;
+﻿using MediaPortal.Configuration;
+using MediaPortal.Dialogs;
 using MediaPortal.GUI.Library;
 using MediaPortal.Profile;
 using System;
@@ -28,7 +29,7 @@ namespace MP_Domoticz
     /// </summary>
 
     public class Main : GUIWindow, ISetupForm
-    {
+    {        
         #region constants
 
         private enum Controls
