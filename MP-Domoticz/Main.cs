@@ -36,6 +36,7 @@ namespace MP_Domoticz
             CONTROL_LIST = 50,
             CONTROL_LABEL = 411,
             CONTROL_BTNREFRESH = 3,
+            CONTROL_CHECKBTN = 10,
         }
 
         private enum DeviceFilter
@@ -76,6 +77,10 @@ namespace MP_Domoticz
 
         [SkinControl(5)]
         protected GUIMenuButton btnFilterBy = null;
+
+        [SkinControl(10)]
+        protected GUICheckButton btnCheckButton = null;
+
         #endregion
 
         #region private properties
@@ -347,6 +352,12 @@ namespace MP_Domoticz
                             break;
                         }
 
+                        if (iControl == (int)Controls.CONTROL_CHECKBTN)
+                        {
+                            Log.Info("MP-Domoticz: GUI_MSG_CLICKED TOGGLE CHECKBUTTON");
+                            OnToggleSwitchCmd();
+                            break;
+                        }
 
                     }
                     break;
@@ -408,6 +419,7 @@ namespace MP_Domoticz
                 return;
             }
 
+            btnCheckButton.Visible = false;
             DomoticzServer.Device device = (DomoticzServer.Device)item.MusicTag;
 
             string desc = "";
@@ -440,6 +452,8 @@ namespace MP_Domoticz
 
                 case "Lighting 2":
                     desc = Translation.Status + ": " + device.Status;
+                    btnCheckButton.Label = Translation.Status;
+                    btnCheckButton.Visible = true;
                     break;
 
                 case "Rain":
@@ -701,6 +715,40 @@ namespace MP_Domoticz
             item.MusicTag = dev;
             GUIControl.AddListItemControl(GetID, listDevices.GetID, item);
             return true;
+        }
+
+        /// <summary>
+        /// Toggle the checkbutton!
+        /// </summary>
+        protected void OnToggleSwitchCmd()
+        {
+            DomoticzServer.Response response = null;
+
+            GUIListItem item = GetSelectedItem();
+            if (item == null)
+            {
+                return;
+            }
+
+            btnCheckButton.Visible = false;
+            DomoticzServer.Device device = (DomoticzServer.Device)item.MusicTag;
+            
+            if(device.Type != "Lighting 2")
+            {
+                Log.Info("OnToggleSwitch - not possible to toggle: "+device.Name);
+                return;
+            }
+
+
+            if (device.Status == "On")
+            {
+                response = currentDomoticzServer.SwitchLight(device.idx, "Off");
+            }
+            else
+            {
+                response = currentDomoticzServer.SwitchLight(device.idx, "On");
+            }
+            Log.Info("OnToggleSwitch "+device.idx+" "+response.title+" "+response.status);
         }
 
         #region Sort

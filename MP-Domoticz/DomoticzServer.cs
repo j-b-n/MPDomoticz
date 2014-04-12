@@ -105,7 +105,7 @@ namespace MP_Domoticz
             public string TypeImg { get; set; }
             public int Unit { get; set; }
             public int Used { get; set; }
-            public string idx { get; set; }
+            public int idx { get; set; }
             public double? AddjMulti2 { get; set; }
             public double? AddjValue2 { get; set; }
             public string Rain { get; set; }
@@ -173,6 +173,30 @@ namespace MP_Domoticz
                 : new DeviceResponse();
         }
 
+        public class Response
+        {
+            public string status { get; set; }
+            public string title { get; set; }
+        }
+
+        public Response SwitchLight(int idx, string command)
+        {
+            string url = "http://" + ServerAddress + ":" + ServerPort + "/json.htm?"+
+            "type=command&param=switchlight&idx="+idx+"&switchcmd="+command+"&level=0";
+            WebClient w = new WebClient();
+            string json_data = "";
+            try
+            {
+                w.Encoding = Encoding.UTF8;
+                json_data = w.DownloadString(url);
+            }
+            catch (Exception) { }
+
+            JsonSerializer jsonSerializer = new JsonSerializer();
+            return !string.IsNullOrEmpty(json_data) ?
+                (Response)JsonConvert.DeserializeObject(json_data, typeof(Response))
+                : new Response();
+        }
 
     }
 }
