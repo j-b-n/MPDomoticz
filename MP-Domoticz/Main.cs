@@ -62,6 +62,7 @@ namespace MP_Domoticz
         /// This plugins unique window ID
         /// </summary>
         private const int WINDOW_ID = 7616;
+        public const int GUIDeviceDetails_WINDOW_ID = 7617;
 
         #endregion
 
@@ -394,6 +395,13 @@ namespace MP_Domoticz
                             break;
                         }
 
+                        if (iControl == (int)Controls.CONTROL_LIST)
+                        {
+                            OnShowDeviceDetails();
+                            break;
+                        }
+
+
                     }
                     break;
             }
@@ -704,7 +712,7 @@ namespace MP_Domoticz
             string poster = skinPath + "\\Media\\Domoticz\\" + dev.TypeImg + "48.png";
             string thumb = skinPath + "\\Media\\Domoticz\\" + dev.TypeImg + ".png";
 
-            GUIListItem item = new GUIListItem(dev.Name);            
+            GUIListItem item = new GUIListItem(dev.Name);                        
 
             switch (dev.Type)
             {
@@ -793,6 +801,27 @@ namespace MP_Domoticz
             }
             Log.Info("OnToggleSwitch "+device.idx+" "+response.title+" "+response.status);
         }
+
+        #region OnShowDeviceDetails
+        private void OnShowDeviceDetails()
+        {            
+            GUIDeviceDetails dlg = (GUIDeviceDetails)GUIWindowManager.GetWindow(GUIDeviceDetails_WINDOW_ID);
+            if (dlg == null)
+            {
+                return;
+            }
+            dlg.ResetAllControls();
+            
+            GUIListItem item = GetSelectedItem();
+            if (item == null)
+            {
+                return;
+            }
+            Log.Info("Open Device info for " + item.Label);
+            GUIWindowManager.ActivateWindow((int)GUIDeviceDetails_WINDOW_ID);
+        }
+
+        #endregion
 
         #region Sort
         /// <summary>
