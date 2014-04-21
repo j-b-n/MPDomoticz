@@ -8,6 +8,7 @@ using Action = MediaPortal.GUI.Library.Action;
 using MediaPortal.Configuration;
 using MediaPortal.Profile;
 using MediaPortal.Dialogs;
+using System.IO;
 
 namespace MP_Domoticz
 {
@@ -70,8 +71,7 @@ namespace MP_Domoticz
                     {
                         //Log.Info("GUIDeviceDetails: GUI_MSG_WINDOW_INIT");
                         LoadSettings();
-                        DeviceIdx = Convert.ToInt32(GUIPropertyManager.GetProperty("#MP-DomoticzDeviceDetials"));
-                        
+                        DeviceIdx = Convert.ToInt32(GUIPropertyManager.GetProperty("#MP-DomoticzDeviceDetials"));                                           
                         base.OnMessage(message);
                         Refresh();
         
@@ -137,6 +137,19 @@ namespace MP_Domoticz
             {
                 currentDomoticzServer = null;
             }
+
+            string fileDir = MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs) + "\\MPDomoticz";
+            Log.Info("Check: "+fileDir);
+            if (!Directory.Exists(fileDir))
+            {
+                Directory.CreateDirectory(fileDir);
+            }
+
+            
+            string fileName = MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs) + "\\MPDomoticz\\"+DeviceIdx+".png";
+            Graph.GenerateGraph(currentDomoticzServer, DeviceIdx, fileName);
+            Log.Info("Filename:" + fileName);
+            GUIPropertyManager.SetProperty("#MPDomoticz.WeekThumb", fileName); 
         }
 
         // <summary>

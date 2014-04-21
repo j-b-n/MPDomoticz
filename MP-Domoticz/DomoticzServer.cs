@@ -236,5 +236,80 @@ namespace MP_Domoticz
                 : new Response();
         }
 
+
+        /*
+         *  Get LightLog
+         * 
+         * http://192.168.1.6:8080/json.htm?type=lightlog&idx=17
+         */
+
+        /*
+         * Graph data
+         */
+        public class GraphResult
+        {
+            public string d { get; set; }
+            public string hu { get; set; }
+            public double ta { get; set; }
+            public double te { get; set; }
+            public double tm { get; set; }
+            public double ch { get; set; }
+            public double cm { get; set; }
+            public double dp { get; set; }
+            public string di { get; set; }
+            public string gu { get; set; }
+            public string sp { get; set; }
+            public string v { get; set; }
+            public string v_min { get; set; }
+            public string v_max { get; set; }
+            public string uvi { get; set; }
+            public string dig { get; set; }
+            public string div { get; set; }
+            public string mm { get; set; }
+            public string ba { get; set; }
+            public string co2 { get; set; }
+            public string co2_min { get; set; }
+            public string co2_max { get; set; }
+        }
+
+        public class GraphResponse
+        {
+            public List<GraphResult> result { get; set; }
+            public string status { get; set; }
+            public string title { get; set; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <param name="sensortype">
+        /// Allowed values are: temp,wind,winddir,counter,rain,uv
+        /// </param>
+        /// <param name="range"></param>
+        /// <returns></returns>
+
+        public GraphResponse GetGraphData(int idx, string sensortype, string range)
+        {
+            string url = "http://" + ServerAddress + ":" + ServerPort + "/json.htm?type=graph&" +
+                "sensor=" + sensortype + "&idx=" + idx + "&range=" + range;
+            WebClient w = new WebClient();
+            string json_data = "";
+            try
+            {
+                w.Encoding = Encoding.UTF8;
+                json_data = w.DownloadString(url);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
+            JsonSerializer jsonSerializer = new JsonSerializer();
+            return !string.IsNullOrEmpty(json_data) ?
+                (GraphResponse)JsonConvert.DeserializeObject(json_data, typeof(GraphResponse))
+                : new GraphResponse();
+        }
+
     }
 }

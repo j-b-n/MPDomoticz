@@ -753,7 +753,7 @@ namespace MP_Domoticz
             return skinPath + "\\Media\\Domoticz\\temp-gt-30.png";
         }
 
-
+       
         private bool AddListItem(DomoticzServer.Device dev)
         {
             string skinName = MediaPortal.Configuration.Config.SkinName;
