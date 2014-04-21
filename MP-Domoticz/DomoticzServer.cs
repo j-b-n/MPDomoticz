@@ -41,12 +41,22 @@ namespace MP_Domoticz
         {
             ServerAddress = server;
             ServerPort = port;
-            /*if(Dns.GetHostEntry(ServerAddress).AddressList.Length < 1)
+
+
+            string url = "http://" + ServerAddress + ":" + ServerPort + "/";
+            WebClient w = new WebClient();
+            string json_data = "";
+            try
+            {
+                w.Encoding = Encoding.UTF8;
+                json_data = w.DownloadString(url);
+            }
+            catch (Exception)
             {
                 return 0;
             }
-             */
-            return 1;
+
+            return 1;            
         }
 
         public class SunSetRise
@@ -68,7 +78,9 @@ namespace MP_Domoticz
                 w.Encoding = Encoding.UTF8;
                 json_data = w.DownloadString(url);
             }
-            catch (Exception) { }
+            catch (Exception) {                
+                return null;
+            }
 
             JsonSerializer jsonSerializer = new JsonSerializer();
             return !string.IsNullOrEmpty(json_data) ?
@@ -165,7 +177,31 @@ namespace MP_Domoticz
                 w.Encoding = Encoding.UTF8;
                 json_data = w.DownloadString(url);
             }
-            catch (Exception) { }
+            catch (Exception) {
+                return null;
+            }
+
+            JsonSerializer jsonSerializer = new JsonSerializer();
+            return !string.IsNullOrEmpty(json_data) ?
+                (DeviceResponse)JsonConvert.DeserializeObject(json_data, typeof(DeviceResponse))
+                : new DeviceResponse();
+        }
+
+
+        public DeviceResponse GetSingleDevice(int idx)
+        {
+            string url = "http://" + ServerAddress + ":" + ServerPort + "/json.htm?type=devices&rid="+idx;
+            WebClient w = new WebClient();
+            string json_data = "";
+            try
+            {
+                w.Encoding = Encoding.UTF8;
+                json_data = w.DownloadString(url);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
 
             JsonSerializer jsonSerializer = new JsonSerializer();
             return !string.IsNullOrEmpty(json_data) ?
@@ -190,7 +226,9 @@ namespace MP_Domoticz
                 w.Encoding = Encoding.UTF8;
                 json_data = w.DownloadString(url);
             }
-            catch (Exception) { }
+            catch (Exception) {
+                return null;
+            }
 
             JsonSerializer jsonSerializer = new JsonSerializer();
             return !string.IsNullOrEmpty(json_data) ?

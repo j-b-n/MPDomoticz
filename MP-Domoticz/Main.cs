@@ -39,6 +39,7 @@ namespace MP_Domoticz
             CONTROL_LABEL = 411,
             CONTROL_BTNREFRESH = 3,
             CONTROL_CHECKBTN = 10,
+            CONTROL_YESNOBTN = 11,
         }
 
         private enum DeviceFilter
@@ -84,6 +85,9 @@ namespace MP_Domoticz
         [SkinControl(10)]
         protected GUICheckButton btnCheckButton = null;
 
+        [SkinControl(11)]
+        protected GUIDialogYesNo btnYesNo= null;
+
         #endregion
 
         #region private properties
@@ -92,6 +96,7 @@ namespace MP_Domoticz
         private string _serverport = "";
 
         private bool IsNetworkAvailable = false;
+        private bool IsServerAvailable = true;
         private DomoticzServer.DeviceResponse DevResponse = null;
         private DateTime RefreshTime = DateTime.Now.AddHours(-1); //for autorefresh
         private int RefreshInterval = 10; //in seconds
@@ -168,7 +173,7 @@ namespace MP_Domoticz
  
         public int GetWindowId()
         {           
-            return 7616;
+            return WINDOW_ID;
         }
 
         /// <summary>
@@ -339,7 +344,7 @@ namespace MP_Domoticz
                         Refresh();
                         UpdateButtons();
 
-                        
+                        //Log.Info("MP-Domoticz: GUI_MSG_WINDOW_INIT COMPLETE");
                         // m_pSiteImage = (GUIImage)GetControl((int)Controls.CONTROL_IMAGELOGO);
 
                         return true;
@@ -401,6 +406,12 @@ namespace MP_Domoticz
                             break;
                         }
 
+                        if (iControl == (int)Controls.CONTROL_YESNOBTN)
+                        {
+                            Log.Info("MP-Domoticz: CONTROL_YESNOBTN");
+                            GUIWindowManager.ShowPreviousWindow();
+                            break;
+                        }
 
                     }
                     break;
@@ -464,6 +475,11 @@ namespace MP_Domoticz
 
             btnCheckButton.Visible = false;
             DomoticzServer.Device device = (DomoticzServer.Device)item.MusicTag;
+
+            if(device == null)
+            {
+                return;
+            }
 
             string desc = "";
             listDevices.NavigateLeft = 5;
@@ -530,29 +546,63 @@ namespace MP_Domoticz
         /// </summary>
         protected void Refresh()
         {
+            int ServerStatus = -1;
             if (currentDomoticzServer == null)
             {
                 currentDomoticzServer = new DomoticzServer();
-                currentDomoticzServer.InitServer(_serveradress,_serverport);
+                ServerStatus = currentDomoticzServer.InitServer(_serveradress,_serverport);
             }
 
+            if(ServerStatus == 0 )
+            {
+                Log.Info("No connection to server "+_serveradress);
+                GUIDialogOK dlgOK = (GUIDialogOK)GUIWindowManager.GetWindow(
+                   (int)GUIWindow.Window.WINDOW_DIALOG_OK);
+                dlgOK.SetHeading("No connection");
+                dlgOK.SetLine(1, "No connection to server " + _serveradress);
+                dlgOK.SetLine(2, String.Empty);
+                dlgOK.SetLine(3, String.Empty);
+                dlgOK.DoModal(WINDOW_ID);
+                IsServerAvailable = false;
+                currentDomoticzServer = null;
+                return;
+            }
+
+            IsServerAvailable = true;
             DevResponse = null;
 
-
             DomoticzServer.SunSetRise sun = currentDomoticzServer.GetSunSet();
-            string str = Translation.Servertime +": "+ sun.ServerTime + " " +
-                Translation.Sunrise+ ": " + sun.Sunrise + " " +
-                Translation.Sunset + ": " + sun.Sunset;            
 
-            GUIPropertyManager.SetProperty("#MPDomoticz.ServerTime", str);
-            
+            if (sun != null)
+            {
+                string str = Translation.Servertime + ": " + sun.ServerTime + " " +
+                    Translation.Sunrise + ": " + sun.Sunrise + " " +
+                    Translation.Sunset + ": " + sun.Sunset;
+
+                GUIPropertyManager.SetProperty("#MPDomoticz.ServerTime", str);
+            }
+            else
+            {
+                IsServerAvailable = false;
+                currentDomoticzServer = null;
+            }
+
             if (listDevices != null)
             {
                 DevResponse = currentDomoticzServer.GetAllDevices();
-                OnFilter();
-                OnSort();
-                UpdateButtons();
+                if (DevResponse != null)
+                {
+                    OnFilter();
+                    OnSort();
+                    UpdateButtons();
+                }
+                else
+                {
+                    IsServerAvailable = false;
+                    currentDomoticzServer = null;
+                }
             }
+            
 
         }
        
@@ -799,7 +849,14 @@ namespace MP_Domoticz
             {
                 response = currentDomoticzServer.SwitchLight(device.idx, "On");
             }
-            Log.Info("OnToggleSwitch "+device.idx+" "+response.title+" "+response.status);
+            if (response == null)
+            {
+                Log.Info("OnToggleSwitch " + device.idx + " RESPONSE NULL!");
+            }
+            else
+            {
+                Log.Info("OnToggleSwitch " + device.idx + " " + response.title + " " + response.status);
+            }
         }
 
         #region OnShowDeviceDetails
@@ -817,8 +874,11 @@ namespace MP_Domoticz
             {
                 return;
             }
-            Log.Info("Open Device info for " + item.Label);
-            GUIWindowManager.ActivateWindow((int)GUIDeviceDetails_WINDOW_ID);
+            DomoticzServer.Device device = (DomoticzServer.Device)item.MusicTag;
+            
+            Log.Info("Open Device info for " + device.idx);
+            GUIPropertyManager.SetProperty("#MP-DomoticzDeviceDetials", device.idx.ToString());
+            GUIWindowManager.ActivateWindow((int)GUIDeviceDetails_WINDOW_ID,device.idx.ToString());
         }
 
         #endregion
@@ -831,7 +891,7 @@ namespace MP_Domoticz
         {
             GUIDialogMenu dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)Window.WINDOW_DIALOG_MENU);
             if (dlg == null)
-            {
+            {                
                 return;
             }
 
@@ -877,6 +937,11 @@ namespace MP_Domoticz
 
         protected virtual void OnSort()
         {
+            if (listDevices == null)
+            {
+                Log.Info("OnSort() listDevices NULL");
+                return;
+            }
             listDevices.Sort(new DeviceSort(CurrentSortBy, CurrentSortAsc));
         }
 
@@ -951,6 +1016,12 @@ namespace MP_Domoticz
         protected virtual void OnFilter()
         {
             listDevices.Clear();
+            if(DevResponse.result==null)
+            {
+
+                Log.Info("OnFilter() DevResponse.result NULL"); 
+                return;
+            }
             foreach (DomoticzServer.Device dev in DevResponse.result)
             {
                 switch (CurrentFilterBy)
