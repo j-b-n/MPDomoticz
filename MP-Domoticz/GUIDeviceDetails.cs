@@ -97,6 +97,32 @@ namespace MP_Domoticz
             }
         }
 
+        /// <summary>
+        /// Remove old thumbs
+        /// </summary>
+       private void RefreshThumbsDir()
+        {
+            string fileDir = MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs) + "\\MPDomoticz";         
+            if (!Directory.Exists(fileDir))
+            {
+                Directory.CreateDirectory(fileDir);
+            }
+
+            var files = new DirectoryInfo(fileDir).GetFiles("*.*");
+            foreach (var file in files)
+            {
+                if (DateTime.UtcNow - file.CreationTimeUtc > TimeSpan.FromMinutes(30))
+                {
+                    Log.Info("Delte: " + file.FullName);
+                    File.Delete(file.FullName);
+                }
+            }           
+        }
+
+        /// <summary>
+        /// Refresh information and thumbs
+        /// </summary>
+        
         private void Refresh()
         {
             if (currentDomoticzServer == null)
@@ -145,8 +171,9 @@ namespace MP_Domoticz
                 Directory.CreateDirectory(fileDir);
             }
 
+            RefreshThumbsDir();
             
-            string fileName = MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs) + "\\MPDomoticz\\"+DeviceIdx+".png";
+            string fileName = MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs) + "\\MPDomoticz\\"+DeviceIdx+"-Week.png";
             Graph.GenerateGraph(currentDomoticzServer, DeviceIdx, fileName);
             Log.Info("Filename:" + fileName);
             GUIPropertyManager.SetProperty("#MPDomoticz.WeekThumb", fileName); 
