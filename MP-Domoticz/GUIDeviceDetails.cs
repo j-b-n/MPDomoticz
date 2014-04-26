@@ -29,11 +29,18 @@ namespace MP_Domoticz
         int DeviceIdx = -1;
         private int ServerStatus = -1;
         private DomoticzServer.DeviceResponse DevResponse = null;
+        private DomoticzServer.DeviceResponse AllDevResponse = null;
 
+        private enum Controls
+        {            
+            CONTROL_SPINCONTROL= 6,            
+        }
         [SkinControlAttribute(100)]
         protected GUILabelControl SelectedDevice = null;
 
-
+        [SkinControlAttribute(6)]
+        protected GUISpinControl DevSpinCtrl = null;
+        
         /// <summary>
         /// Get Window-ID
         /// </summary>
@@ -65,6 +72,8 @@ namespace MP_Domoticz
 
         public override bool OnMessage(GUIMessage message)
         {
+            Log.Info("OnMessage: " + message.Message.ToString());
+
             switch (message.Message)
             {
                 case GUIMessage.MessageType.GUI_MSG_WINDOW_INIT:
@@ -73,8 +82,7 @@ namespace MP_Domoticz
                         LoadSettings();
                         DeviceIdx = Convert.ToInt32(GUIPropertyManager.GetProperty("#MP-DomoticzDeviceDetials"));                                           
                         base.OnMessage(message);
-                        Refresh();
-        
+                        Refresh();                        
                         return true;
                     }
 
@@ -85,9 +93,31 @@ namespace MP_Domoticz
                         return true;
                     }
 
+                case GUIMessage.MessageType.GUI_MSG_CLICKED:
+                    {
+                        int iControl = message.SenderControlId;
+                        Log.Info("MP-Domoticz: GUI_MSG_CLICKED iControl:" + iControl);
+                        if (iControl == (int)Controls.CONTROL_SPINCONTROL)
+                        {
+                            
+                            Log.Info("Current devidx: " + DeviceIdx);
+                            Log.Info("Value: " + DevSpinCtrl.Value);
+                            if (DevSpinCtrl.Value != DeviceIdx)
+                            {
+                                DeviceIdx = AllDevResponse.result[DevSpinCtrl.Value].idx;
+                                Log.Info("New devidx: " + DeviceIdx);
+                                Refresh();
+                            }
+                            
+                            return true;
+                        }
+                    return true;
+                    }
+
                 case GUIMessage.MessageType.GUI_MSG_SETFOCUS:
                     {
-                        Refresh();
+                        //Refresh();
+                        DevSpinCtrl.Focus = true;
                         return true;
                     }
 
@@ -95,6 +125,36 @@ namespace MP_Domoticz
                     Log.Info("DEFAULT: " + message.Message.ToString());
                     return true;
             }
+        }
+
+        private void EnumerateDeviceLeft()
+        {
+            int prevIdx = -1;
+            int nextIdx = -1;
+            bool getNext = false;
+            
+
+            DomoticzServer.DeviceResponse DevResponse = currentDomoticzServer.GetAllDevices();
+            foreach (DomoticzServer.Device dev in DevResponse.result)
+            {
+                if (getNext == true)
+                {
+                    nextIdx = dev.idx;
+                    break;
+                }
+                else
+                {
+                    if (DeviceIdx == dev.idx)
+                    {
+                        getNext = true;
+                    }
+                    else
+                    {
+                        prevIdx = dev.idx;
+                    }
+                }
+            }
+            Log.Info("Left: "+prevIdx + " " + DeviceIdx + " " + nextIdx);
         }
 
         /// <summary>
@@ -113,7 +173,7 @@ namespace MP_Domoticz
             {
                 if (DateTime.UtcNow - file.CreationTimeUtc > TimeSpan.FromMinutes(30))
                 {
-                    Log.Info("Delte: " + file.FullName);
+                    Log.Info("Delete: " + file.FullName);
                     File.Delete(file.FullName);
                 }
             }           
@@ -145,10 +205,38 @@ namespace MP_Domoticz
                 return;
             }
 
+            /// 
+
+            DevSpinCtrl.Reset();
+            AllDevResponse = currentDomoticzServer.GetAllDevices();
+            DevSpinCtrl.SetRange(0, AllDevResponse.result.Count - 1);
+            int i = 0;
+            foreach (DomoticzServer.Device d in AllDevResponse.result)
+            {
+                DevSpinCtrl.AddLabel(d.Name+"("+d.idx+")", i);
+                if (DeviceIdx == d.idx)
+                {
+                    DevSpinCtrl.Value = i;
+                }
+                i++;
+            }
+            DevSpinCtrl.Focus = true;            
+            
             DevResponse = currentDomoticzServer.GetSingleDevice(DeviceIdx);
             DomoticzServer.Device dev = DevResponse.result[0];
-            SelectedDevice.Label = ": " + dev.LastUpdate;
+            SelectedDevice.Label = Translation.Lastupdate+": " + dev.LastUpdate;
 
+            string desc = currentDomoticzServer.GetDeviceDescription(dev);
+            desc += " ("+dev.idx+")";
+            GUIPropertyManager.SetProperty("#MPDomoticz.Desc", desc);
+
+            desc = Translation.Type+": "+ dev.Type + " " + dev.SubType;
+            GUIPropertyManager.SetProperty("#MPDomoticz.TypeInfo", desc);
+
+            desc = currentDomoticzServer.GetIcon(dev);
+            GUIPropertyManager.SetProperty("#MPDomoticz.CurrentDeviceIcon", desc);
+
+            
             DomoticzServer.SunSetRise sun = currentDomoticzServer.GetSunSet();
 
             if (sun != null)
@@ -174,7 +262,7 @@ namespace MP_Domoticz
             RefreshThumbsDir();
             
             string fileName = MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs) + "\\MPDomoticz\\"+DeviceIdx+"-Week.png";
-            Graph.GenerateGraph(currentDomoticzServer, DeviceIdx, fileName);
+            //Graph.GenerateGraph(currentDomoticzServer, DeviceIdx, fileName);
             Log.Info("Filename:" + fileName);
             GUIPropertyManager.SetProperty("#MPDomoticz.WeekThumb", fileName); 
         }

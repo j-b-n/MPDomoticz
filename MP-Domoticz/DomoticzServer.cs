@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -59,6 +60,147 @@ namespace MP_Domoticz
             return 1;            
         }
 
+        #region helper functions
+
+        /// <summary>
+        /// Return a string to the current appropriate temperature icon
+        /// </summary>
+        /// <param name="temp"></param>
+        /// <returns></returns>
+        public string  GetTempIcon(double temp)
+        {
+            string skinName = MediaPortal.Configuration.Config.SkinName;
+            string skinPath = MediaPortal.Configuration.Config.GetSubFolder(MediaPortal.Configuration.Config.Dir.Skin, skinName);
+            if (temp < 5)
+            {
+                return skinPath + "\\Media\\Domoticz\\temp-0-5.png";
+            }
+            if (temp > 5 && temp <= 10)
+            {
+                return skinPath + "\\Media\\Domoticz\\temp-5-10.png";
+            }
+            if (temp > 10 && temp <= 15)
+            {
+                return skinPath + "\\Media\\Domoticz\\temp-10-15.png";
+            }
+            if (temp > 15 && temp <= 20)
+            {
+                return skinPath + "\\Media\\Domoticz\\temp-15-20.png";
+            }
+            if (temp > 20 && temp <= 25)
+            {
+                return skinPath + "\\Media\\Domoticz\\temp-20-25.png";
+            }
+            if (temp > 25 && temp <= 30)
+            {
+                return skinPath + "\\Media\\Domoticz\\temp-25-30.png";
+            }
+
+            return skinPath + "\\Media\\Domoticz\\temp-gt-30.png";
+        }
+
+
+        /// <summary>
+        /// Return a string to the current appropriate icon
+        /// </summary>
+        /// <param name="temp"></param>
+        /// <returns></returns>
+        public string GetIcon(Device dev)
+        {
+            string skinName = MediaPortal.Configuration.Config.SkinName;
+            string skinPath = MediaPortal.Configuration.Config.GetSubFolder(MediaPortal.Configuration.Config.Dir.Skin, skinName);
+
+            string poster = skinPath + "\\Media\\Domoticz\\" + dev.TypeImg + "48.png";
+            string thumb = skinPath + "\\Media\\Domoticz\\" + dev.TypeImg + ".png";
+
+            switch (dev.Type)
+            {
+                case "Temp":
+                    poster = GetTempIcon(dev.Temp);
+                    break;
+
+                case "Temp + Humidity":
+                    poster = GetTempIcon(dev.Temp);
+                    break;
+
+                case "Wind":
+                    poster = skinPath + "\\Media\\Domoticz\\Wind" + dev.DirectionStr + ".png";
+                    break;
+
+                case "Lighting 2":
+                    if (dev.Status == "On")
+                    {
+                        poster = skinPath + "\\Media\\Domoticz\\Light48_On.png";
+                    }
+                    else
+                    {
+                        poster = skinPath + "\\Media\\Domoticz\\Light48_Off.png";
+                    }
+                    break;
+
+                case "Rain":                    
+                    break;
+
+                default:                    
+                    break;
+            }
+
+            if (!File.Exists(poster))
+            {
+                poster = thumb;
+            }
+            return poster;
+        }
+
+        public string GetDeviceDescription(Device device)
+        {
+            string desc = "";
+            switch (device.Type)
+            {
+                case "Temp":
+                    return device.Temp.ToString() + "°";                    
+
+                case "Temp + Humidity":
+                    desc = device.Temp.ToString() + "°";
+                    if (device.Humidity != null)
+                    {
+                        desc += " / " + device.Humidity.ToString() + "%";
+                    }
+                    if (device.DewPoint != null)
+                    {
+                        desc += " " + Translation.Dewpoint + ": " + device.DewPoint.ToString() + "°";
+                    }
+
+                    return desc;
+                case "Wind":
+                    desc = device.DirectionStr + " / " + device.Speed + "m/s";
+                    if (device.Gust != null)
+                    {
+                        desc += " " + Translation.Gust + ": " + device.Gust.ToString() + "°";
+                    }
+                    return desc;
+
+                case "Lighting 2":
+                    desc = Translation.Status + ": " + device.Status;
+                    return desc;
+
+                case "Rain":
+                    desc = device.Rain + " mm";
+                    return desc;
+
+                case "General":
+                    desc = Translation.Status + ": " + device.Data;
+                    return desc;
+
+                default:
+                    desc = device.Name + " " + device.Type;
+                    return desc;
+            }
+        }
+
+        #endregion
+
+        #region SunRise & SunSet
         public class SunSetRise
         {
             public string ServerTime { get; set; }
@@ -87,12 +229,12 @@ namespace MP_Domoticz
                 (SunSetRise)JsonConvert.DeserializeObject(json_data, typeof(SunSetRise))
                 : new SunSetRise();
         }
+        #endregion
 
 
-        /****
-         * 
-         * 
-         * ***/
+        /// <summary>
+        /// Information about device 
+        /// </summary>
         public class Device
         {
             public double AddjMulti { get; set; }

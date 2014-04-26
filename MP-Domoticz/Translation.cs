@@ -44,7 +44,6 @@ namespace MP_Domoticz
         /// </summary>
         #region Translatable Fields
         
-        // Views        
         public static string Favourites = "Favourites";
         public static string Scenes = "Scenes";
         public static string Switches = "Switches";
@@ -57,7 +56,10 @@ namespace MP_Domoticz
         public static string Status = "Status";
         public static string Servertime = "Servertime";
         public static string Sunrise = "Sunrise";
-        public static string Sunset = "Sunset";  
+        public static string Sunset = "Sunset";
+        public static string Lastupdate = "Lastupdate";
+        public static string Type = "Type";  
+
 
         #endregion
 

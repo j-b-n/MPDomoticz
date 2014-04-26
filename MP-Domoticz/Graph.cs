@@ -15,9 +15,8 @@ namespace MP_Domoticz
     {
         public static void GenerateGraph(DomoticzServer DS, int idx, string fileName)
         {                                                
-            int DeviceIdx = 47;
             
-            DomoticzServer.GraphResponse GR = DS.GetGraphData(DeviceIdx, "temp", "month");
+            DomoticzServer.GraphResponse GR = DS.GetGraphData(idx, "temp", "month");
 
             var plotModel1 = new PlotModel();
             //plotModel1.Title = "Temperatur senaste månaden";

@@ -484,34 +484,11 @@ namespace MP_Domoticz
             string desc = "";
             listDevices.NavigateLeft = 5;
 
+            desc = currentDomoticzServer.GetDeviceDescription(device);
+
             switch (device.Type)
-            {
-                case "Temp":
-                    desc = device.Temp.ToString() + "°";
-                    break;
-
-                case "Temp + Humidity":
-                    desc = device.Temp.ToString() + "°";
-                    if (device.Humidity != null)
-                    {
-                        desc += " / " + device.Humidity.ToString() + "%";
-                    }
-                    if (device.DewPoint != null)
-                    {
-                        desc += " " + Translation.Dewpoint + ": " + device.DewPoint.ToString() + "°";
-                    }
-
-                    break;
-                case "Wind":
-                    desc = device.DirectionStr + " / " + device.Speed + "m/s";
-                    if (device.Gust != null)
-                    {
-                        desc += " " + Translation.Gust + ": " + device.Gust.ToString() + "°";
-                    }
-                    break;
-
-                case "Lighting 2":
-                    desc = Translation.Status + ": " + device.Status;
+            {                
+                case "Lighting 2":                    
                     btnCheckButton.Label = Translation.Status;
                     btnCheckButton.Visible = true;
                     if (device.Status == "On")
@@ -523,13 +500,8 @@ namespace MP_Domoticz
                     }
                     listDevices.NavigateLeft = 10;
                     break;
-
-                case "Rain":
-                    desc = device.Rain + " mm";
-                    break;
-
-                default:
-                    desc = "";
+                
+                default:                
                     break;
             }
 
@@ -716,43 +688,6 @@ namespace MP_Domoticz
             }
         }
 
-        /// <summary>
-        /// Return a string to the current appropriate temperature icon
-        /// </summary>
-        /// <param name="temp"></param>
-        /// <returns></returns>
-        string GetTempIcon(double temp)
-        {
-            string skinName = MediaPortal.Configuration.Config.SkinName;
-            string skinPath = MediaPortal.Configuration.Config.GetSubFolder(MediaPortal.Configuration.Config.Dir.Skin, skinName);
-            if (temp < 5)
-            {
-                return skinPath + "\\Media\\Domoticz\\temp-0-5.png";
-            }
-            if (temp > 5 && temp <= 10)
-            {
-                return skinPath + "\\Media\\Domoticz\\temp-5-10.png";
-            }
-            if (temp > 10 && temp <= 15)
-            {
-                return skinPath + "\\Media\\Domoticz\\temp-10-15.png";
-            }
-            if (temp > 15 && temp <= 20)
-            {
-                return skinPath + "\\Media\\Domoticz\\temp-15-20.png";
-            }
-            if (temp > 20 && temp <= 25)
-            {
-                return skinPath + "\\Media\\Domoticz\\temp-20-25.png";
-            }
-            if (temp > 25 && temp <= 30)
-            {
-                return skinPath + "\\Media\\Domoticz\\temp-25-30.png";
-            }
-
-            return skinPath + "\\Media\\Domoticz\\temp-gt-30.png";
-        }
-
        
         private bool AddListItem(DomoticzServer.Device dev)
         {
@@ -768,7 +703,7 @@ namespace MP_Domoticz
             {
                 case "Temp":
                     item.Label2 = dev.Temp.ToString() + "°";
-                    poster = GetTempIcon(dev.Temp);
+                    poster = currentDomoticzServer.GetTempIcon(dev.Temp);
                     break;
 
                 case "Temp + Humidity":
@@ -777,7 +712,7 @@ namespace MP_Domoticz
                     {
                         item.Label2 += " / " + dev.Humidity.ToString() + "%";
                     }
-                    poster = GetTempIcon(dev.Temp);
+                    poster = currentDomoticzServer.GetTempIcon(dev.Temp);
                     break;
                 case "Wind":
                     item.Label2 = dev.DirectionStr + " / " + dev.Speed + "m/s";
