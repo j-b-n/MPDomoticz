@@ -1677,6 +1677,13 @@
               <ZipFileName>Installer{CopyFile}\{3a605aa8-3e3f-45d2-ae2d-dddfef3ab91a}-MP-Domoticz.xml</ZipFileName>
               <DestinationFilename>%Skin%\Titan\MP-Domoticz.xml</DestinationFilename>
             </FileItem>
+            <FileItem InstallType="CopyFile" SystemFile="false" Modified="false">
+              <Param1 />
+              <UpdateOption>OverwriteIfOlder</UpdateOption>
+              <LocalFileName>MP-Domoticz\Skin\Titan\MP-Domoticz.DeviceDetails.xml</LocalFileName>
+              <ZipFileName>Installer{CopyFile}\{e8b4d0db-1204-4335-8a59-b31fc002fc6e}-MP-Domoticz.DeviceDetails.xml</ZipFileName>
+              <DestinationFilename>%Skin%\Titan\MP-Domoticz.DeviceDetails.xml</DestinationFilename>
+            </FileItem>
           </Items>
         </Files>
       </GroupItem>
@@ -1816,7 +1823,7 @@ Click Next to continue or Cancel to exit Setup.</Value>
     <Name>MP-Domoticz</Name>
     <Id>fa7968ec-ca50-4410-bb4b-38f6d88f3f5e</Id>
     <Author>J-B-N</Author>
-    <HomePage />
+    <HomePage>https://github.com/j-b-n/MPDomoticz</HomePage>
     <ForumPage />
     <UpdateUrl />
     <Version>
@@ -1831,7 +1838,7 @@ Click Next to continue or Cancel to exit Setup.</Value>
     <OnlineLocation />
     <ReleaseDate>2014-04-27T19:45:49.5961374+02:00</ReleaseDate>
     <Tags />
-    <Location />
+    <Location>C:\Users\joabj85\Documents\GitHub\MPDomoticz\MP-Domoticz.mpe1</Location>
     <Params>
       <Items>
         <SectionParam Name="Icon">
@@ -3490,11 +3497,18 @@ Click Next to continue or Cancel to exit Setup.</Value>
         <ZipFileName>Installer{CopyFile}\{6924e119-786e-4c85-a326-566600b12612}-xls_hover.png</ZipFileName>
         <DestinationFilename>%Skin%\Titan\Media\Domoticz\xls_hover.png</DestinationFilename>
       </FileItem>
+      <FileItem InstallType="CopyFile" SystemFile="false" Modified="false">
+        <Param1 />
+        <UpdateOption>OverwriteIfOlder</UpdateOption>
+        <LocalFileName>MP-Domoticz\Skin\Titan\MP-Domoticz.DeviceDetails.xml</LocalFileName>
+        <ZipFileName>Installer{CopyFile}\{e8b4d0db-1204-4335-8a59-b31fc002fc6e}-MP-Domoticz.DeviceDetails.xml</ZipFileName>
+        <DestinationFilename>%Skin%\Titan\MP-Domoticz.DeviceDetails.xml</DestinationFilename>
+      </FileItem>
       <FileItem InstallType="CopyFile" SystemFile="true" Modified="true">
         <Param1 />
         <UpdateOption>OverwriteIfOlder</UpdateOption>
         <LocalFileName>..\..\Visual Studio 2013\Projects\MP-Domoticz\MP-Domoticz\images\icon.png</LocalFileName>
-        <ZipFileName>Installer{CopyFile}\{7757a30d-90df-486d-babd-aeaa9454cf8c}-icon.png</ZipFileName>
+        <ZipFileName>Installer{CopyFile}\{c6323f84-c116-49f6-80a3-d4c65a0b4320}-icon.png</ZipFileName>
         <DestinationFilename />
       </FileItem>
     </Items>
@@ -3513,7 +3527,7 @@ Click Next to continue or Cancel to exit Setup.</Value>
       </FolderGroup>
     </FolderGroups>
     <ProjectFilename>MP-Domoticz.xmp2</ProjectFilename>
-    <UpdatePath1 />
+    <UpdatePath1>C:\Users\joabj85\Documents\GitHub\MPDomoticz\MP-Domoticz.xml</UpdatePath1>
     <UpdatePath2 />
     <UpdatePath3 />
   </ProjectSettings>
