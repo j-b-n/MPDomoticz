@@ -13,10 +13,18 @@
               <Items />
             </Files>
           </GroupItem>
-          <GroupItem Name="Skin">
-            <DisplayName>Skin</DisplayName>
+          <GroupItem Name="Skin - Titanium">
+            <DisplayName>Skin - Titanium</DisplayName>
             <DefaulChecked>true</DefaulChecked>
-            <Description>Skin</Description>
+            <Description>Skin - Titanium</Description>
+            <Files>
+              <Items />
+            </Files>
+          </GroupItem>
+          <GroupItem Name="Skin - Titan">
+            <DisplayName>Skin - Titan</DisplayName>
+            <DefaulChecked>true</DefaulChecked>
+            <Description>Skin - Titan</Description>
             <Files>
               <Items />
             </Files>
@@ -50,7 +58,24 @@
         </Items>
       </Dependencies>
       <PluginDependencies>
-        <Items />
+        <Items>
+          <PluginDependencyItem AssemblyName="MPDomoticz.dll">
+            <CompatibleVersion>
+              <Items>
+                <CompatibleVersionItem>
+                  <MinRequiredVersion>1.6.100.0</MinRequiredVersion>
+                  <DesignedForVersion>1.6.100.0</DesignedForVersion>
+                </CompatibleVersionItem>
+              </Items>
+            </CompatibleVersion>
+            <SubSystemsUsed>
+              <Items>
+                <SubSystemItem Name="MP.Config" />
+                <SubSystemItem Name="MP.SkinEngine" />
+              </Items>
+            </SubSystemsUsed>
+          </PluginDependencyItem>
+        </Items>
       </PluginDependencies>
       <GeneralInfo>
         <Name>MP-Domoticz</Name>
@@ -58,7 +83,7 @@
         <Author>J-B-N</Author>
         <HomePage>https://github.com/j-b-n/MPDomoticz</HomePage>
         <ForumPage />
-        <UpdateUrl />
+        <UpdateUrl>https://raw.githubusercontent.com/j-b-n/MPDomoticz/master/MP-Domoticz.xml</UpdateUrl>
         <Version>
           <Major>0</Major>
           <Minor>0</Minor>
@@ -68,7 +93,7 @@
         <ExtensionDescription />
         <VersionDescription />
         <DevelopmentStatus>Alpha</DevelopmentStatus>
-        <OnlineLocation />
+        <OnlineLocation>https://github.com/j-b-n/MPDomoticz</OnlineLocation>
         <ReleaseDate>2014-04-27T19:45:49.5961374+02:00</ReleaseDate>
         <Tags />
         <Location>C:\Users\joabj85\Documents\GitHub\MPDomoticz\MP-Domoticz.mpe1</Location>
@@ -87,7 +112,7 @@
  If it has .dll extension it's started like MP plugin configuration.</Description>
             </SectionParam>
             <SectionParam Name="Online Screenshots">
-              <Value />
+              <Value>https://raw.githubusercontent.com/j-b-n/MPDomoticz/master/screenshot.PNG</Value>
               <ValueType>String</ValueType>
               <Description>Online stored screenshot urls separated by ; </Description>
             </SectionParam>

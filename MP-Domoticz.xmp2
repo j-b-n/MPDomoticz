@@ -3489,7 +3489,7 @@ Click Next to continue or Cancel to exit Setup.</Value>
  If it has .dll extension it's started like MP plugin configuration.</Description>
         </SectionParam>
         <SectionParam Name="Online Screenshots">
-          <Value />
+          <Value>https://raw.githubusercontent.com/j-b-n/MPDomoticz/master/screenshot.PNG</Value>
           <ValueType>String</ValueType>
           <Description>Online stored screenshot urls separated by ; </Description>
         </SectionParam>
@@ -6776,7 +6776,7 @@ Click Next to continue or Cancel to exit Setup.</Value>
         <Param1 />
         <UpdateOption>OverwriteIfOlder</UpdateOption>
         <LocalFileName>..\..\Visual Studio 2013\Projects\MP-Domoticz\MP-Domoticz\images\icon.png</LocalFileName>
-        <ZipFileName>Installer{CopyFile}\{c6323f84-c116-49f6-80a3-d4c65a0b4320}-icon.png</ZipFileName>
+        <ZipFileName>Installer{CopyFile}\{c160263a-7963-4725-bdfd-264b2522ee13}-icon.png</ZipFileName>
         <DestinationFilename />
       </FileItem>
     </Items>
