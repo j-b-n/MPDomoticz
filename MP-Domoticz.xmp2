@@ -1835,7 +1835,7 @@ Click Next to continue or Cancel to exit Setup.</Value>
     <ExtensionDescription />
     <VersionDescription />
     <DevelopmentStatus>Alpha</DevelopmentStatus>
-    <OnlineLocation />
+    <OnlineLocation>https://github.com/j-b-n/MPDomoticz</OnlineLocation>
     <ReleaseDate>2014-04-27T19:45:49.5961374+02:00</ReleaseDate>
     <Tags />
     <Location>C:\Users\joabj85\Documents\GitHub\MPDomoticz\MP-Domoticz.mpe1</Location>
