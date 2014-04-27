@@ -13,18 +13,18 @@
               <Items />
             </Files>
           </GroupItem>
-          <GroupItem Name="Skin - Titanium">
-            <DisplayName>Skin - Titanium</DisplayName>
-            <DefaulChecked>true</DefaulChecked>
-            <Description>Skin - Titanium</Description>
-            <Files>
-              <Items />
-            </Files>
-          </GroupItem>
           <GroupItem Name="Skin - Titan">
             <DisplayName>Skin - Titan</DisplayName>
             <DefaulChecked>true</DefaulChecked>
             <Description>Skin - Titan</Description>
+            <Files>
+              <Items />
+            </Files>
+          </GroupItem>
+          <GroupItem Name="Skin - Titanius">
+            <DisplayName>Skin - Titanius</DisplayName>
+            <DefaulChecked>true</DefaulChecked>
+            <Description>Skin - Titanius</Description>
             <Files>
               <Items />
             </Files>
