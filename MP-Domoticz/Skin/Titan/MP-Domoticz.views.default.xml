@@ -47,6 +47,8 @@
         <spinPosX>1828</spinPosX>
         <spinPosY>1000</spinPosY>
 		
+		<hyperlink>600</hyperlink>
+		
 		<animation effect="fade" time="250">WindowOpen</animation>
 	    <animation effect="fade" time="250">WindowClose</animation>
       </control>
