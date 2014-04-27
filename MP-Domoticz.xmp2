@@ -1825,7 +1825,7 @@ Click Next to continue or Cancel to exit Setup.</Value>
     <Author>J-B-N</Author>
     <HomePage>https://github.com/j-b-n/MPDomoticz</HomePage>
     <ForumPage />
-    <UpdateUrl />
+    <UpdateUrl>https://raw.githubusercontent.com/j-b-n/MPDomoticz/master/MP-Domoticz.xml</UpdateUrl>
     <Version>
       <Major>0</Major>
       <Minor>0</Minor>
