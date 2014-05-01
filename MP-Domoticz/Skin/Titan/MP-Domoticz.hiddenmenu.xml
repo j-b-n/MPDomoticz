@@ -110,14 +110,24 @@
 					<onleft>50</onleft>
 					<onright>50</onright>
 					<onup>2</onup>
-					<ondown>5</ondown>
+					<ondown>17</ondown>
 					<textureFocus>hiddenmenu_item_selected.png</textureFocus>
 					<textureNoFocus>-</textureNoFocus>		
 					<width>499</width>
 					<height>69</height>
 					<textXOff>62</textXOff>
 					<textYOff>16</textYOff>	
-				</control>				
+				</control>		
+
+				<control Style="SettingsButton">
+				<description>Search</description>
+				<type>button</type>
+				<id>17</id>
+				<label>DETAILS</label>
+				<hyperlink>7617</hyperlink>
+				<ondown>9</ondown>
+			</control>
+				
 			</control>
 		</control>
 </controls>

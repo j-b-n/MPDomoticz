@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<window> 
+<controls>
+
+    <control> 
+      <id>1</id>
+      <type>image</type>
+      <posX>65</posX> 
+      <posY>305</posY>
+      <width>210</width>
+      <height>222</height>
+      <texture flipY="true" mask="music_filmstrip_mask.png">#selectedthumb</texture> 
+      <animation effect="fade" time="250" delay="0">WindowClose</animation>
+      <animation effect="fade" time="250" delay="0">WindowOpen</animation>
+      <keepaspectratio>yes</keepaspectratio>
+    </control> 
+
+	<control>
+      <type>label</type>
+      <id>0</id>
+      <label>#selecteditem</label>
+      <posX>800</posX>
+      <posY>1015</posY>
+	  <align>center</align>
+    </control>
+
+	<control>
+      <type>label</type>
+      <id>411</id>
+      <label>No data!</label>
+      <posX>500</posX>
+      <posY>450</posY>
+    </control>
+	
+	<control>
+      <type>label</type>
+      <id>0</id>
+      <label>#MPDomoticz.Desc</label>
+      <posX>500</posX>
+      <posY>350</posY>
+    </control>
+		    
+	<control Style="InfoValueSmall">
+		<description>Device lastupdate</description>
+		<type>label</type>
+		<label>#MPDomoticz.DeviceLastUpdate</label>
+		<id>0</id>
+		<posX>500</posX>
+		<posY>387</posY>
+	  <animation effect="fade" time="250">WindowOpen</animation>
+	  <animation effect="fade" time="250">WindowClose</animation>
+	</control>
+
+	<control> 
+		<description>Server time</description>
+		<type>label</type>
+		<label>#MPDomoticz.ServerTime</label>
+		<id>501</id>
+		<posX>70</posX>
+		<posY>1000</posY>
+	  <animation effect="fade" time="250">WindowOpen</animation>
+	  <animation effect="fade" time="250">WindowClose</animation>
+	</control>
+
+	<control Style="SettingsButtonMedium">
+        <description>Toggle device</description>
+        <type>checkbutton</type>
+        <id>10</id>
+        <onup>50</onup>
+		<onleft>5</onleft>
+		<onright>50</onright>
+        <label>Device</label>
+		<posX>300</posX>
+		<posY>600</posY>
+		<animation effect="fade" time="250">WindowOpen</animation>
+	    <animation effect="fade" time="250">WindowClose</animation>
+    </control>
+	
+	
+</controls>
+</window>
