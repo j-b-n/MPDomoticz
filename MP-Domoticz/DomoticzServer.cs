@@ -99,6 +99,43 @@ namespace MP_Domoticz
             return skinPath + "\\Media\\Domoticz\\temp-gt-30.png";
         }
 
+        /// <summary>
+        /// Return what type of Graph should be generated for this device
+        /// </summary>
+        /// <param name="dev"></param>
+        /// <returns></returns>
+        public string GetGraphType(Device dev)
+        {
+            switch (dev.Type)
+            {
+                case "Temp":
+                    return "Temp";
+                
+                case "Temp + Humidity":
+                    return "TempHum";
+                
+                case "Barometer":
+                case "Temp + Baro":
+                    return "Barometer";
+                
+                case "Rain":
+                    return "Rain";
+                case "Wind":
+                    return "Wind";
+                
+                case "General":                
+                    if (dev.SubType == "Percentage")
+                    {
+                        return "Percentage";
+                    }
+                    return "counter";
+                
+                case "Security":
+                case "Lighting 2":
+                    return "lightlog";
+            }
+            return "None";
+        }
 
         /// <summary>
         /// Return a string to the current appropriate icon
@@ -384,6 +421,51 @@ namespace MP_Domoticz
          * 
          * http://192.168.1.6:8080/json.htm?type=lightlog&idx=17
          */
+        public class LightLogResult
+        {
+            public string Data { get; set; }
+            public string Date { get; set; }
+            public int Level { get; set; }
+            public int MaxDimLevel { get; set; }
+            public string Status { get; set; }
+            public string idx { get; set; }
+        }
+
+        public class LightLogResponse
+        {
+            public bool HaveDimmer { get; set; }
+            public bool HaveGroupCmd { get; set; }
+            public List<LightLogResult> result { get; set; }
+            public string status { get; set; }
+            public string title { get; set; }
+        }
+
+        /// <summary>
+        /// Get the lightlog for a device
+        /// </summary>
+        /// <param name="idx">The specified device ID</param>
+        /// <returns></returns>
+        public LightLogResponse GetLightLog(int idx)
+        {
+            string url = "http://" + ServerAddress + ":" + ServerPort + "/json.htm?type=lightlog&idx=" + idx;
+            WebClient w = new WebClient();
+            string json_data = "";
+            try
+            {
+                w.Encoding = Encoding.UTF8;
+                json_data = w.DownloadString(url);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
+            JsonSerializer jsonSerializer = new JsonSerializer();
+            return !string.IsNullOrEmpty(json_data) ?
+                (LightLogResponse)JsonConvert.DeserializeObject(json_data, typeof(LightLogResponse))
+                : new LightLogResponse();
+        }
+
 
         /*
          * Graph data
@@ -391,27 +473,28 @@ namespace MP_Domoticz
         public class GraphResult
         {
             public string d { get; set; }
-            public string hu { get; set; }
+            public double hu { get; set; }
             public double ta { get; set; }
             public double te { get; set; }
             public double tm { get; set; }
             public double ch { get; set; }
             public double cm { get; set; }
             public double dp { get; set; }
-            public string di { get; set; }
-            public string gu { get; set; }
-            public string sp { get; set; }
-            public string v { get; set; }
-            public string v_min { get; set; }
-            public string v_max { get; set; }
-            public string uvi { get; set; }
-            public string dig { get; set; }
-            public string div { get; set; }
-            public string mm { get; set; }
-            public string ba { get; set; }
-            public string co2 { get; set; }
-            public string co2_min { get; set; }
-            public string co2_max { get; set; }
+            public double di { get; set; }
+            public double gu { get; set; }
+            public double sp { get; set; }
+            public double v { get; set; }
+            public double v_avg { get; set; }
+            public double v_min { get; set; }
+            public double v_max { get; set; }
+            public double uvi { get; set; }
+            public double dig { get; set; }
+            public double div { get; set; }
+            public double mm { get; set; }
+            public double ba { get; set; }
+            public double co2 { get; set; }
+            public double co2_min { get; set; }
+            public double co2_max { get; set; }
         }
 
         public class GraphResponse
@@ -426,7 +509,7 @@ namespace MP_Domoticz
         /// </summary>
         /// <param name="idx"></param>
         /// <param name="sensortype">
-        /// Allowed values are: temp,wind,winddir,counter,rain,uv
+        /// Allowed values are: temp,wind,winddir,counter,rain,uv, Percentage
         /// </param>
         /// <param name="range"></param>
         /// <returns></returns>
