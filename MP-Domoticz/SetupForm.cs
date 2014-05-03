@@ -35,7 +35,19 @@ namespace MP_Domoticz
         private void button1_Click(object sender, EventArgs e)
         {
             //Save settings
-            _serveradress = textBox1.Text;
+            
+            Uri uriResult; 
+            bool result = Uri.TryCreate(textBox1.Text, UriKind.Absolute, out uriResult) && uriResult.Scheme == Uri.UriSchemeHttp;
+
+            if (result)
+            {
+                _serveradress = uriResult.ToString();
+            }
+            else
+            {
+                MessageBox.Show("Malformed url entered!");
+                return;
+            }
             _serverport = textBox2.Text;
             RefreshInterval = (int)numericUpDown1.Value;
 

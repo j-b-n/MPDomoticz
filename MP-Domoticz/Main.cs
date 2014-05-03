@@ -537,7 +537,7 @@ namespace MP_Domoticz
             if (currentDomoticzServer == null)
             {
                 currentDomoticzServer = new DomoticzServer();
-                ServerStatus = currentDomoticzServer.InitServer(_serveradress,_serverport);
+                ServerStatus = currentDomoticzServer.InitServer(_serveradress,_serverport);                
             }
 
             if(ServerStatus == 0 )

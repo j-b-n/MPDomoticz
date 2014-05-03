@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using MediaPortal.GUI.Library;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,6 +12,7 @@ namespace MP_Domoticz
 {
     public class DomoticzServer
     {        
+        private string url = "";
         static string _ServerAddress;
         
         public static string ServerAddress
@@ -39,12 +41,25 @@ namespace MP_Domoticz
         }
 
         public int InitServer(string server, string port)
-        {
+        {            
             ServerAddress = server;
             ServerPort = port;
 
+            if (_ServerPort != "")
+            {
+                if (ServerAddress.EndsWith("/"))
+                {
+                    ServerAddress = ServerAddress.Substring(0, ServerAddress.Length - 1);
+                }
+                url = ServerAddress + ":" + ServerPort + "/";
+            }
+            else
+            {
+                url = ServerAddress;
+            }
 
-            string url = "http://" + ServerAddress + ":" + ServerPort + "/";
+            Log.Info("Establish connection " + url);
+            
             WebClient w = new WebClient();
             string json_data = "";
             try
@@ -249,13 +264,13 @@ namespace MP_Domoticz
 
         public  SunSetRise GetSunSet()
         {            
-            string url = "http://" + ServerAddress + ":" + ServerPort + "/json.htm?type=command&param=getSunRiseSet";
+            string tmpUrl = url + "json.htm?type=command&param=getSunRiseSet";
             WebClient w = new WebClient();
             string json_data = "";
             try
             {
                 w.Encoding = Encoding.UTF8;
-                json_data = w.DownloadString(url);
+                json_data = w.DownloadString(tmpUrl);
             }
             catch (Exception) {                
                 return null;
@@ -348,13 +363,13 @@ namespace MP_Domoticz
 
         public DeviceResponse GetAllDevices()
         {           
-            string url = "http://" + ServerAddress + ":" + ServerPort + "/json.htm?type=devices&used=true&order=Name";
+            string tmpUrl = url + "json.htm?type=devices&used=true&order=Name";
             WebClient w = new WebClient();
             string json_data = "";
             try
             {
                 w.Encoding = Encoding.UTF8;
-                json_data = w.DownloadString(url);
+                json_data = w.DownloadString(tmpUrl);
             }
             catch (Exception) {
                 return null;
@@ -369,13 +384,13 @@ namespace MP_Domoticz
 
         public DeviceResponse GetSingleDevice(int idx)
         {
-            string url = "http://" + ServerAddress + ":" + ServerPort + "/json.htm?type=devices&rid="+idx;
+            string tmpUrl = url + "json.htm?type=devices&rid="+idx;
             WebClient w = new WebClient();
             string json_data = "";
             try
             {
                 w.Encoding = Encoding.UTF8;
-                json_data = w.DownloadString(url);
+                json_data = w.DownloadString(tmpUrl);
             }
             catch (Exception)
             {
@@ -396,14 +411,14 @@ namespace MP_Domoticz
 
         public Response SwitchLight(int idx, string command)
         {
-            string url = "http://" + ServerAddress + ":" + ServerPort + "/json.htm?"+
+            string tmpUrl = url + "json.htm?"+
             "type=command&param=switchlight&idx="+idx+"&switchcmd="+command+"&level=0";
             WebClient w = new WebClient();
             string json_data = "";
             try
             {
                 w.Encoding = Encoding.UTF8;
-                json_data = w.DownloadString(url);
+                json_data = w.DownloadString(tmpUrl);
             }
             catch (Exception) {
                 return null;
@@ -447,13 +462,13 @@ namespace MP_Domoticz
         /// <returns></returns>
         public LightLogResponse GetLightLog(int idx)
         {
-            string url = "http://" + ServerAddress + ":" + ServerPort + "/json.htm?type=lightlog&idx=" + idx;
+            string tmpUrl = url + "json.htm?type=lightlog&idx=" + idx;
             WebClient w = new WebClient();
             string json_data = "";
             try
             {
                 w.Encoding = Encoding.UTF8;
-                json_data = w.DownloadString(url);
+                json_data = w.DownloadString(tmpUrl);
             }
             catch (Exception)
             {
@@ -516,14 +531,14 @@ namespace MP_Domoticz
 
         public GraphResponse GetGraphData(int idx, string sensortype, string range)
         {
-            string url = "http://" + ServerAddress + ":" + ServerPort + "/json.htm?type=graph&" +
+            string tmpUrl = url + "json.htm?type=graph&" +
                 "sensor=" + sensortype + "&idx=" + idx + "&range=" + range;
             WebClient w = new WebClient();
             string json_data = "";
             try
             {
                 w.Encoding = Encoding.UTF8;
-                json_data = w.DownloadString(url);
+                json_data = w.DownloadString(tmpUrl);
             }
             catch (Exception)
             {
