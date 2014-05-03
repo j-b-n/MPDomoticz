@@ -85,21 +85,12 @@ namespace MP_Domoticz
         private string _serveradress = "";
         private string _serverport = "";
 
-        private bool IsNetworkAvailable = false;
-        private bool IsServerAvailable = true;
-        
+        private bool IsNetworkAvailable = false;        
         DomoticzServer.DeviceResponse DevResponse = null;
 
         private DateTime RefreshTime = DateTime.Now.AddHours(-1); //for autorefresh
         private int RefreshInterval = 10; //in seconds
         #endregion
-
-        /*
-        public Main()
-        {
-
-        }
-         */
 
         #region ISetupForm Members
        
@@ -558,13 +549,11 @@ namespace MP_Domoticz
                 dlgOK.SetLine(1, "No connection to server " + _serveradress);
                 dlgOK.SetLine(2, String.Empty);
                 dlgOK.SetLine(3, String.Empty);
-                dlgOK.DoModal(WINDOW_ID);
-                IsServerAvailable = false;
+                dlgOK.DoModal(WINDOW_ID);                
                 currentDomoticzServer = null;
                 return;
             }
-
-            IsServerAvailable = true;
+            
             DevResponse = null;
 
             DomoticzServer.SunSetRise sun = currentDomoticzServer.GetSunSet();
@@ -578,8 +567,7 @@ namespace MP_Domoticz
                 GUIPropertyManager.SetProperty("#MPDomoticz.ServerTime", str);
             }
             else
-            {
-                IsServerAvailable = false;
+            {                
                 currentDomoticzServer = null;
             }
 
@@ -593,8 +581,7 @@ namespace MP_Domoticz
                     UpdateButtons();
                 }
                 else
-                {
-                    IsServerAvailable = false;
+                {                    
                     currentDomoticzServer = null;
                 }
             }
