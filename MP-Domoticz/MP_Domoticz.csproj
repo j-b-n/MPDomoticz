@@ -48,6 +48,7 @@
     <None Include="Skin\Titan\Media\Domoticz\temp48.psd" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DeviceFilter.cs" />
     <Compile Include="DeviceSort.cs" />
     <Compile Include="DomoticzServer.cs" />
     <Compile Include="Graph.cs" />

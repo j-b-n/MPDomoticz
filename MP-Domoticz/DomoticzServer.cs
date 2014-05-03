@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MP_Domoticz
 {
-    class DomoticzServer
+    public class DomoticzServer
     {        
         static string _ServerAddress;
         
@@ -359,7 +359,7 @@ namespace MP_Domoticz
             catch (Exception) {
                 return null;
             }
-
+            
             JsonSerializer jsonSerializer = new JsonSerializer();
             return !string.IsNullOrEmpty(json_data) ?
                 (DeviceResponse)JsonConvert.DeserializeObject(json_data, typeof(DeviceResponse))

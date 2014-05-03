@@ -1,10 +1,11 @@
-﻿using MediaPortal.Configuration;
-using MediaPortal.Dialogs;
+﻿using MediaPortal.Dialogs;
 using MediaPortal.GUI.Library;
 using MediaPortal.Profile;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using System.Linq;
 
 //http://wiki.team-mediaportal.com/1_MEDIAPORTAL_1/18_Contribute/6_Plugins/Plugin_Developer's_Guide/1_Develop_a_Plugin
 /*
@@ -42,18 +43,7 @@ namespace MP_Domoticz
             CONTROL_YESNOBTN = 11,
         }
 
-        private enum DeviceFilter
-        {
-            Favorites = 1,
-            Switches = 2,
-            Scenes = 3,
-            Temperature = 4,
-            Weather = 5,
-            Utility = 6,
-            All = 7,
-        }
-
-        int CurrentFilterBy = (int)DeviceFilter.All;
+        DeviceFilter.DeviceFilterBy CurrentFilterBy = DeviceFilter.DeviceFilterBy.All;
 
         DeviceSort.SortMethod CurrentSortBy = DeviceSort.SortMethod.Name;
         bool CurrentSortAsc = true;
@@ -97,16 +87,19 @@ namespace MP_Domoticz
 
         private bool IsNetworkAvailable = false;
         private bool IsServerAvailable = true;
-        private DomoticzServer.DeviceResponse DevResponse = null;
+        
+        DomoticzServer.DeviceResponse DevResponse = null;
+
         private DateTime RefreshTime = DateTime.Now.AddHours(-1); //for autorefresh
         private int RefreshInterval = 10; //in seconds
         #endregion
 
-
+        /*
         public Main()
         {
 
         }
+         */
 
         #region ISetupForm Members
        
@@ -245,6 +238,27 @@ namespace MP_Domoticz
                 _serveradress = xmlreader.GetValueAsString("MPDomoticz", "ServerAdress", "localhost");
                 _serverport = xmlreader.GetValueAsString("MPDomoticz", "ServerPort", "8080");
                 RefreshInterval = xmlreader.GetValueAsInt("MPDomoticz", "RefreshInterval", 30);
+                
+                
+                string strTmp = xmlreader.GetValueAsString("MPDomoticz", "FilterBy", "All");                
+                if (!Enum.TryParse<DeviceFilter.DeviceFilterBy>(strTmp, out CurrentFilterBy))
+                {
+                    CurrentFilterBy = DeviceFilter.DeviceFilterBy.All;
+                }
+                               
+                //CurrentSortBy = (DeviceSort.SortMethod)xmlreader.GetValueAsInt("MPDomoticz", "SortBy", (int)DeviceSort.SortMethod.Name);
+                strTmp = xmlreader.GetValueAsString("MPDomoticz", "SortBy", "Name");
+                if (!Enum.TryParse<DeviceSort.SortMethod>(strTmp, out CurrentSortBy))
+                {
+                    CurrentSortBy = DeviceSort.SortMethod.Name;
+                }
+                
+                int tmp = xmlreader.GetValueAsInt("MPDomoticz", "SortByAsc", 1);
+                CurrentSortAsc = true;
+                if (tmp == 0)
+                {
+                    CurrentSortAsc = false;
+                }
             }
         }
 
@@ -256,6 +270,16 @@ namespace MP_Domoticz
                 xmlwriter.SetValue("MPDomoticz", "ServerAdress", _serveradress);
                 xmlwriter.SetValue("MPDomoticz", "ServerPort", _serverport);
                 xmlwriter.SetValue("MPDomoticz", "RefreshInterval", RefreshInterval);
+                xmlwriter.SetValue("MPDomoticz", "SortBy", CurrentSortBy);
+                if (CurrentSortAsc)
+                {
+                    xmlwriter.SetValue("MPDomoticz", "SortByAsc", 1);
+                }
+                else
+                {
+                    xmlwriter.SetValue("MPDomoticz", "SortByAsc", 0);
+                }
+                xmlwriter.SetValue("MPDomoticz", "FilterBy", CurrentFilterBy);
                 
             }
         }
@@ -439,25 +463,25 @@ namespace MP_Domoticz
             btnStr = GUILocalizeStrings.Get(97); //View by: 
             switch (CurrentFilterBy)
             {
-                case (int)DeviceFilter.Favorites:
+                case DeviceFilter.DeviceFilterBy.Favorites:
                     btnStr += Translation.Favourites;
                     break;
-                case (int)DeviceFilter.Scenes:
+                case DeviceFilter.DeviceFilterBy.Scenes:
                     btnStr += Translation.Scenes;
                     break;
-                case (int)DeviceFilter.Switches:
+                case DeviceFilter.DeviceFilterBy.Switches:
                     btnStr += Translation.Switches;
                     break;
-                case (int)DeviceFilter.Temperature:
+                case DeviceFilter.DeviceFilterBy.Temperature:
                     btnStr += Translation.Temperature;
                     break;
-                case (int)DeviceFilter.Weather:
+                case DeviceFilter.DeviceFilterBy.Weather:
                     btnStr += Translation.Weather;
                     break;
-                case (int)DeviceFilter.Utility:
+                case DeviceFilter.DeviceFilterBy.Utility:
                     btnStr += Translation.Utility;
                     break;
-                case (int)DeviceFilter.All:
+                case DeviceFilter.DeviceFilterBy.All:
                     btnStr += Translation.All;
                     break;
             }            
@@ -560,12 +584,12 @@ namespace MP_Domoticz
             }
 
             if (listDevices != null)
-            {
+            {                                
                 DevResponse = currentDomoticzServer.GetAllDevices();
+                                               
                 if (DevResponse != null)
-                {
-                    OnFilter();
-                    OnSort();
+                {          
+                    OnFilter();                    
                     UpdateButtons();
                 }
                 else
@@ -868,16 +892,12 @@ namespace MP_Domoticz
             OnSort();
             UpdateButtons();
             GUIControl.FocusControl(GetID, btnSortBy.GetID);
+            SaveSettings();
         }
-
+        
         protected virtual void OnSort()
-        {
-            if (listDevices == null)
-            {
-                Log.Info("OnSort() listDevices NULL");
-                return;
-            }
-            listDevices.Sort(new DeviceSort(CurrentSortBy, CurrentSortAsc));
+        {            
+            DevResponse.result.Sort(new DeviceSort(CurrentSortBy, CurrentSortAsc));            
         }
 
         #endregion
@@ -919,75 +939,56 @@ namespace MP_Domoticz
             switch (dlg.SelectedId)
             {
                 case 1:
-                    CurrentFilterBy = (int)DeviceFilter.Favorites;
+                    CurrentFilterBy = DeviceFilter.DeviceFilterBy.Favorites;
                     break;
                 case 2:
-                    CurrentFilterBy = (int)DeviceFilter.Switches;
+                    CurrentFilterBy = DeviceFilter.DeviceFilterBy.Switches;
                     break;
                 case 3:
-                    CurrentFilterBy = (int)DeviceFilter.Scenes;
+                    CurrentFilterBy = DeviceFilter.DeviceFilterBy.Scenes;
                     break;
                 case 4:
-                    CurrentFilterBy = (int)DeviceFilter.Temperature;
+                    CurrentFilterBy = DeviceFilter.DeviceFilterBy.Temperature;
                     break;
                 case 5:
-                    CurrentFilterBy = (int)DeviceFilter.Weather;
+                    CurrentFilterBy = DeviceFilter.DeviceFilterBy.Weather;
                     break;
                 case 6:
-                    CurrentFilterBy = (int)DeviceFilter.Utility;
+                    CurrentFilterBy = DeviceFilter.DeviceFilterBy.Utility;
                     break;
                 case 7:
-                    CurrentFilterBy = (int)DeviceFilter.All;
+                    CurrentFilterBy = DeviceFilter.DeviceFilterBy.All;
                     break;
                 default:
-                    CurrentFilterBy = (int)DeviceFilter.Favorites;
+                    CurrentFilterBy = DeviceFilter.DeviceFilterBy.Favorites;
                     break;
-            }
+            }            
             OnFilter();
             UpdateButtons();
             GUIControl.FocusControl(GetID, btnFilterBy.GetID);
+            SaveSettings();
         }
 
         protected virtual void OnFilter()
         {
+            OnSort();
             listDevices.Clear();
+
+            List<DomoticzServer.Device> res = null;            
+            DeviceFilter F = new DeviceFilter(CurrentFilterBy);
+            res = DevResponse.result.Where(x => F.Filter(x)).ToList();
+            
             if(DevResponse.result==null)
             {
 
                 Log.Info("OnFilter() DevResponse.result NULL"); 
                 return;
             }
-            foreach (DomoticzServer.Device dev in DevResponse.result)
+
+            foreach (DomoticzServer.Device dev in res)
             {
-                switch (CurrentFilterBy)
-                {
-                    case (int)DeviceFilter.Favorites:
-                        if (dev.Favorite > 0)
-                        {
-                            AddListItem(dev);
-                        }
-                        break;
-                    case (int)DeviceFilter.Switches:
-                        if (dev.Type == "Lighting 2" ||
-                            dev.Type == "Security")
-                        {
-                            AddListItem(dev);
-                        }
-                        break;
-                    case (int)DeviceFilter.Temperature:
-                        if (dev.Type == "Temp" ||
-                            dev.Type == "Temp + Humidity" ||
-                            dev.Type == "Temp + Baro")
-                        {
-                            AddListItem(dev);
-                        }
-                        break;
-                    default:
-                        AddListItem(dev);
-                        break;
-                }
-            }
-            OnSort();
+                AddListItem(dev);                               
+            }            
         }
 
         #endregion

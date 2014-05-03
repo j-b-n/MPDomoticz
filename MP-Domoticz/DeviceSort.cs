@@ -8,9 +8,9 @@ using MediaPortal.Util;
 namespace MP_Domoticz
 {    
  /// <summary>
- /// Summary description for MusicSort.
+ /// Sort list based on Device information!
  /// </summary>
- public class DeviceSort : IComparer<GUIListItem>
+ public class DeviceSort : IComparer<DomoticzServer.Device>
  {
    private SortMethod currentSortMethod;
    private bool sortAscending = true;
@@ -27,7 +27,7 @@ namespace MP_Domoticz
      LastSeen = 1, // LastSeen     
    }
  
-   public int Compare(GUIListItem item1, GUIListItem item2)
+   public int Compare(DomoticzServer.Device item1, DomoticzServer.Device item2)
    {
      if (item1 == item2)
      {
@@ -41,26 +41,7 @@ namespace MP_Domoticz
      {
        return -1;
      }
-     if (item1.IsFolder && item1.Label == "..")
-     {
-       return -1;
-     }
-     if (item2.IsFolder && item2.Label == "..")
-     {
-       return -1;
-     }
-     if (item1.IsFolder && !item2.IsFolder)
-     {
-       return -1;
-     }
-     else if (!item1.IsFolder && item2.IsFolder)
-     {
-       return 1;
-     }
-
-     DomoticzServer.Device device1 = (DomoticzServer.Device)item1.MusicTag;
-     DomoticzServer.Device device2 = (DomoticzServer.Device)item2.MusicTag;
- 
+   
  
      SortMethod method = currentSortMethod;
      bool bAscending = sortAscending;
@@ -69,12 +50,12 @@ namespace MP_Domoticz
      {
          case SortMethod.Name:
              if (bAscending)
-             {                 
-                 return MediaPortal.Util.StringLogicalComparer.Compare(item1.Label, item2.Label);
+             {
+                 return MediaPortal.Util.StringLogicalComparer.Compare(item1.Name, item2.Name);
              }
              else
              {
-                 return MediaPortal.Util.StringLogicalComparer.Compare(item2.Label, item1.Label);
+                 return MediaPortal.Util.StringLogicalComparer.Compare(item2.Name, item1.Name);
              }
 
 
@@ -82,13 +63,13 @@ namespace MP_Domoticz
 
              DateTime time1 = DateTime.MinValue;
              DateTime time2 = DateTime.MinValue;
-             if (device1 != null)
+             if (item1 != null)
              {
-                 time1 = Convert.ToDateTime(device1.LastUpdate);
+                 time1 = Convert.ToDateTime(item1.LastUpdate);
              }
-             if (device2 != null)
+             if (item2 != null)
              {
-                 time2 = Convert.ToDateTime(device2.LastUpdate);
+                 time2 = Convert.ToDateTime(item2.LastUpdate);
              }
 
              if (bAscending)

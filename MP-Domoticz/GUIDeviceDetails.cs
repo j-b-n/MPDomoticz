@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediaPortal.Dialogs;
 using MediaPortal.GUI.Library;
-using Action = MediaPortal.GUI.Library.Action;
-using MediaPortal.Configuration;
 using MediaPortal.Profile;
-using MediaPortal.Dialogs;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace MP_Domoticz
 {
@@ -20,6 +16,9 @@ namespace MP_Domoticz
         /// </summary>        
         public const int GUIDeviceDetails_WINDOW_ID = 7617;
 
+        DeviceFilter.DeviceFilterBy CurrentFilterBy = DeviceFilter.DeviceFilterBy.All;
+        DeviceSort.SortMethod CurrentSortBy = DeviceSort.SortMethod.Name;
+        bool CurrentSortAsc = true;
 
         private DomoticzServer currentDomoticzServer = null;
         private string _serveradress = "";
@@ -32,15 +31,15 @@ namespace MP_Domoticz
         private DomoticzServer.DeviceResponse AllDevResponse = null;
 
         private enum Controls
-        {            
-            CONTROL_SPINCONTROL= 6,            
+        {
+            CONTROL_SPINCONTROL = 6,
         }
         [SkinControlAttribute(100)]
         protected GUILabelControl SelectedDevice = null;
 
         [SkinControlAttribute(6)]
         protected GUISpinControl DevSpinCtrl = null;
-        
+
         /// <summary>
         /// Get Window-ID
         /// </summary>
@@ -72,24 +71,22 @@ namespace MP_Domoticz
 
         public override bool OnMessage(GUIMessage message)
         {
-            Log.Info("OnMessage: " + message.Message.ToString());
+            //Log.Info("OnMessage: " + message.Message.ToString());
 
             switch (message.Message)
             {
                 case GUIMessage.MessageType.GUI_MSG_WINDOW_INIT:
-                    {
-                        //Log.Info("GUIDeviceDetails: GUI_MSG_WINDOW_INIT");
+                    {                        
                         LoadSettings();
-                        DeviceIdx = Convert.ToInt32(GUIPropertyManager.GetProperty("#MP-DomoticzDeviceDetials"));                                           
+                        DeviceIdx = Convert.ToInt32(GUIPropertyManager.GetProperty("#MP-DomoticzDeviceDetials"));
                         base.OnMessage(message);
-                        Refresh();                        
+                        Refresh();
                         return true;
                     }
 
 
                 case GUIMessage.MessageType.GUI_MSG_WINDOW_DEINIT:
-                    {
-                        //Log.Info("GUIDeviceDetails: GUI_MSG_WINDOW_DEINIT");                        
+                    {                     
                         return true;
                     }
 
@@ -99,7 +96,7 @@ namespace MP_Domoticz
                         Log.Info("MP-Domoticz: GUI_MSG_CLICKED iControl:" + iControl);
                         if (iControl == (int)Controls.CONTROL_SPINCONTROL)
                         {
-                            
+
                             Log.Info("Current devidx: " + DeviceIdx);
                             Log.Info("Value: " + DevSpinCtrl.Value);
                             if (DevSpinCtrl.Value != DeviceIdx)
@@ -108,10 +105,10 @@ namespace MP_Domoticz
                                 Log.Info("New devidx: " + DeviceIdx);
                                 Refresh();
                             }
-                            
+
                             return true;
                         }
-                    return true;
+                        return true;
                     }
 
                 case GUIMessage.MessageType.GUI_MSG_SETFOCUS:
@@ -132,9 +129,11 @@ namespace MP_Domoticz
             int prevIdx = -1;
             int nextIdx = -1;
             bool getNext = false;
-            
 
-            DomoticzServer.DeviceResponse DevResponse = currentDomoticzServer.GetAllDevices();
+
+            DevResponse = currentDomoticzServer.GetAllDevices();
+            
+            OnSort();
             foreach (DomoticzServer.Device dev in DevResponse.result)
             {
                 if (getNext == true)
@@ -154,15 +153,16 @@ namespace MP_Domoticz
                     }
                 }
             }
-            Log.Info("Left: "+prevIdx + " " + DeviceIdx + " " + nextIdx);
+            Log.Info("Left: " + prevIdx + " " + DeviceIdx + " " + nextIdx);
         }
 
         /// <summary>
         /// Remove old thumbs
         /// </summary>
-       private void RefreshThumbsDir()
+        private void RefreshThumbsDir()
         {
-            string fileDir = MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs) + "\\MPDomoticz";         
+            string fileDir = MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs) + "\\MPDomoticz";
+
             if (!Directory.Exists(fileDir))
             {
                 Directory.CreateDirectory(fileDir);
@@ -173,35 +173,44 @@ namespace MP_Domoticz
             {
                 if (DateTime.UtcNow - file.CreationTimeUtc > TimeSpan.FromMinutes(30))
                 {
-                    Log.Info("Delete: " + file.FullName);
+                    Log.Info("Delete: " + file.FullName + " Age: " + (DateTime.UtcNow - file.CreationTimeUtc));
+                    Log.Info("Creation:" + DateTime.UtcNow);
+                    Log.Info("Creation:" + file.CreationTimeUtc);
                     File.Delete(file.FullName);
                 }
-            }           
+            }
         }
 
 
-       private void RefreshSpinControl()
-       {
-           DevSpinCtrl.Reset();
-           AllDevResponse = currentDomoticzServer.GetAllDevices();
-           DevSpinCtrl.SetRange(0, AllDevResponse.result.Count - 1);
-           int i = 0;
-           foreach (DomoticzServer.Device d in AllDevResponse.result)
-           {
-               DevSpinCtrl.AddLabel(d.Name + " (" + d.idx + ")", i);
-               if (DeviceIdx == d.idx)
-               {
-                   DevSpinCtrl.Value = i;
-               }
-               i++;
-           }
-           DevSpinCtrl.Focus = true;
+        private void RefreshSpinControl()
+        {
+            DevSpinCtrl.Reset();
+            AllDevResponse = currentDomoticzServer.GetAllDevices();
+            
+            List<DomoticzServer.Device> res = null;
+            DeviceFilter F = new DeviceFilter(CurrentFilterBy);
+            res = AllDevResponse.result.Where(x => F.Filter(x)).ToList();
+                        
+            OnSort();
 
-       }
+            DevSpinCtrl.SetRange(0, res.Count - 1);
+            int i = 0;
+            foreach (DomoticzServer.Device d in res)
+            {
+                DevSpinCtrl.AddLabel(d.Name + " (" + d.idx + ")", i);
+                if (DeviceIdx == d.idx)
+                {
+                    DevSpinCtrl.Value = i;
+                }
+                i++;
+            }
+            DevSpinCtrl.Focus = true;
+
+        }
+
         /// <summary>
         /// Refresh information and thumbs
         /// </summary>
-        
         private void Refresh()
         {
             if (currentDomoticzServer == null)
@@ -219,22 +228,22 @@ namespace MP_Domoticz
                 dlgOK.SetLine(1, "No connection to server " + _serveradress);
                 dlgOK.SetLine(2, String.Empty);
                 dlgOK.SetLine(3, String.Empty);
-                dlgOK.DoModal(GUIDeviceDetails_WINDOW_ID);                
+                dlgOK.DoModal(GUIDeviceDetails_WINDOW_ID);
                 currentDomoticzServer = null;
                 return;
             }
 
             /// 
-            if(AllDevResponse == null)
+            if (AllDevResponse == null)
             {
                 RefreshSpinControl();
             }
-            
+
             //DevResponse = currentDomoticzServer.GetSingleDevice(DeviceIdx);
             DomoticzServer.Device dev = null;
-            
+
             foreach (DomoticzServer.Device d in AllDevResponse.result)
-            {             
+            {
                 if (DeviceIdx == d.idx)
                 {
                     dev = d;
@@ -243,18 +252,18 @@ namespace MP_Domoticz
             }
 
             //DomoticzServer.Device dev = DevResponse.result[0];
-            SelectedDevice.Label = Translation.Lastupdate+": " + dev.LastUpdate;
+            SelectedDevice.Label = Translation.Lastupdate + ": " + dev.LastUpdate;
 
-            string desc = currentDomoticzServer.GetDeviceDescription(dev);            
+            string desc = currentDomoticzServer.GetDeviceDescription(dev);
             GUIPropertyManager.SetProperty("#MPDomoticz.Desc", desc);
 
-            desc = Translation.Type+": "+ dev.Type + " " + dev.SubType;
+            desc = Translation.Type + ": " + dev.Type + " " + dev.SubType;
             GUIPropertyManager.SetProperty("#MPDomoticz.TypeInfo", desc);
 
             desc = currentDomoticzServer.GetIcon(dev);
             GUIPropertyManager.SetProperty("#MPDomoticz.CurrentDeviceIcon", desc);
 
-            
+
             DomoticzServer.SunSetRise sun = currentDomoticzServer.GetSunSet();
 
             if (sun != null)
@@ -271,20 +280,21 @@ namespace MP_Domoticz
             }
 
             string fileDir = MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs) + "\\MPDomoticz";
-            Log.Info("Check: "+fileDir);
+            Log.Info("Check: " + fileDir);
             if (!Directory.Exists(fileDir))
             {
                 Directory.CreateDirectory(fileDir);
             }
 
             RefreshThumbsDir();
-            
-            
-            string fileName = MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs) + "\\MPDomoticz\\"+DeviceIdx+"-Week.png";
-            Log.Info("Generate graph:" + DeviceIdx + " '" + dev.Type + "' '" + dev.SubType+"'");
-            Graph.GenerateGraph(currentDomoticzServer, DeviceIdx, fileName, currentDomoticzServer.GetGraphType(dev));
-            Log.Info("Filename:" + fileName);
-            GUIPropertyManager.SetProperty("#MPDomoticz.WeekThumb", fileName); 
+
+            string fileName = MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs) + "\\MPDomoticz\\" + DeviceIdx + "-Week.png";
+            if (!File.Exists(fileName))
+            {
+                Log.Info("Generate graph:" + DeviceIdx + " '" + dev.Type + "' '" + dev.SubType + "'");
+                Graph.GenerateGraph(currentDomoticzServer, DeviceIdx, fileName, currentDomoticzServer.GetGraphType(dev));
+            }
+            GUIPropertyManager.SetProperty("#MPDomoticz.WeekThumb", fileName);
         }
 
         // <summary>
@@ -303,7 +313,19 @@ namespace MP_Domoticz
             base.Process();
         }
 
+        public void OnSort()
+        {
+            if (DevSpinCtrl == null)
+            {
+                Log.Info("OnSort() DevSpinCtrl NULL");
+                return;
+            }
+            AllDevResponse.result.Sort(new DeviceSort(CurrentSortBy, CurrentSortAsc));
+        }
+        
+        
         #region Serialisation
+
         private void LoadSettings()
         {
             using (Settings xmlreader = new MPSettings())
@@ -311,9 +333,29 @@ namespace MP_Domoticz
                 _serveradress = xmlreader.GetValueAsString("MPDomoticz", "ServerAdress", "localhost");
                 _serverport = xmlreader.GetValueAsString("MPDomoticz", "ServerPort", "8080");
                 RefreshInterval = xmlreader.GetValueAsInt("MPDomoticz", "RefreshInterval", 30);
+
+
+                string strTmp = xmlreader.GetValueAsString("MPDomoticz", "FilterBy", "All");
+                if (!Enum.TryParse<DeviceFilter.DeviceFilterBy>(strTmp, out CurrentFilterBy))
+                {
+                    CurrentFilterBy = DeviceFilter.DeviceFilterBy.All;
+                }
+
+                //CurrentSortBy = (DeviceSort.SortMethod)xmlreader.GetValueAsInt("MPDomoticz", "SortBy", (int)DeviceSort.SortMethod.Name);
+                strTmp = xmlreader.GetValueAsString("MPDomoticz", "SortBy", "Name");
+                if (!Enum.TryParse<DeviceSort.SortMethod>(strTmp, out CurrentSortBy))
+                {
+                    CurrentSortBy = DeviceSort.SortMethod.Name;
+                }
+
+                int tmp = xmlreader.GetValueAsInt("MPDomoticz", "SortByAsc", 1);
+                CurrentSortAsc = true;
+                if (tmp == 0)
+                {
+                    CurrentSortAsc = false;
+                }
             }
         }
         #endregion
-
     }
 }
