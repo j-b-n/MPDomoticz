@@ -90,11 +90,23 @@
           <Build>0</Build>
           <Revision>1</Revision>
         </Version>
-        <ExtensionDescription />
-        <VersionDescription />
+        <ExtensionDescription>MPDomoticz is a Mediaportal plugin that shows Domoticz information.
+
+	• For more information about Domoticz see http://www.domoticz.com 
+	• For more information about Mediaportal see http://www.team-mediaportal.com
+
+This is the first alpha release. I have been using the plugin over the past months myself and in general I simply use it to quickly check some information or turn on/off a lamp or two. 
+
+I'd appreciate any comments/help with the design. 
+
+The plugin is hosted at GitHub: https://github.com/j-b-n/MPDomoticz
+
+The direct link to the plugin is here: https://github.com/j-b-n/MPDomoticz/raw/master/MP-Domoticz.mpe1
+</ExtensionDescription>
+        <VersionDescription>Alpha release</VersionDescription>
         <DevelopmentStatus>Alpha</DevelopmentStatus>
         <OnlineLocation>https://github.com/j-b-n/MPDomoticz</OnlineLocation>
-        <ReleaseDate>2014-04-27T19:45:49.5961374+02:00</ReleaseDate>
+        <ReleaseDate>2014-07-02T19:45:49</ReleaseDate>
         <Tags />
         <Location>C:\Users\joabj85\Documents\GitHub\MPDomoticz\MP-Domoticz.mpe1</Location>
         <Params>
