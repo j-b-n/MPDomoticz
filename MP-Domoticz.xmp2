@@ -3462,8 +3462,20 @@ Click Next to continue or Cancel to exit Setup.</Value>
       <Build>0</Build>
       <Revision>1</Revision>
     </Version>
-    <ExtensionDescription />
-    <VersionDescription />
+    <ExtensionDescription>MPDomoticz is a Mediaportal plugin that shows Domoticz information.
+
+	• For more information about Domoticz see http://www.domoticz.com 
+	• For more information about Mediaportal see http://www.team-mediaportal.com
+
+This is the first alpha release. I have been using the plugin over the past months myself and in general I simply use it to quickly check some information or turn on/off a lamp or two. 
+
+I'd appreciate any comments/help with the design. 
+
+The plugin is hosted at GitHub: https://github.com/j-b-n/MPDomoticz
+
+The direct link to the plugin is here: https://github.com/j-b-n/MPDomoticz/raw/master/MP-Domoticz.mpe1
+</ExtensionDescription>
+    <VersionDescription>Alpha release</VersionDescription>
     <DevelopmentStatus>Alpha</DevelopmentStatus>
     <OnlineLocation>https://github.com/j-b-n/MPDomoticz</OnlineLocation>
     <ReleaseDate>2014-07-02T19:45:49</ReleaseDate>
@@ -6776,7 +6788,7 @@ Click Next to continue or Cancel to exit Setup.</Value>
         <Param1 />
         <UpdateOption>OverwriteIfOlder</UpdateOption>
         <LocalFileName>..\..\Visual Studio 2013\Projects\MP-Domoticz\MP-Domoticz\images\icon.png</LocalFileName>
-        <ZipFileName>Installer{CopyFile}\{ad5e03fa-1067-4e30-a502-c55f18df621d}-icon.png</ZipFileName>
+        <ZipFileName>Installer{CopyFile}\{0bf5ed2d-8c44-4483-b7e5-9f24d604fee9}-icon.png</ZipFileName>
         <DestinationFilename />
       </FileItem>
     </Items>
