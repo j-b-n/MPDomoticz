@@ -3466,7 +3466,7 @@ Click Next to continue or Cancel to exit Setup.</Value>
     <VersionDescription />
     <DevelopmentStatus>Alpha</DevelopmentStatus>
     <OnlineLocation>https://github.com/j-b-n/MPDomoticz</OnlineLocation>
-    <ReleaseDate>2014-04-27T19:45:49.5961374+02:00</ReleaseDate>
+    <ReleaseDate>2014-07-02T19:45:49</ReleaseDate>
     <Tags />
     <Location>C:\Users\joabj85\Documents\GitHub\MPDomoticz\MP-Domoticz.mpe1</Location>
     <Params>
@@ -6776,7 +6776,7 @@ Click Next to continue or Cancel to exit Setup.</Value>
         <Param1 />
         <UpdateOption>OverwriteIfOlder</UpdateOption>
         <LocalFileName>..\..\Visual Studio 2013\Projects\MP-Domoticz\MP-Domoticz\images\icon.png</LocalFileName>
-        <ZipFileName>Installer{CopyFile}\{c160263a-7963-4725-bdfd-264b2522ee13}-icon.png</ZipFileName>
+        <ZipFileName>Installer{CopyFile}\{ad5e03fa-1067-4e30-a502-c55f18df621d}-icon.png</ZipFileName>
         <DestinationFilename />
       </FileItem>
     </Items>
