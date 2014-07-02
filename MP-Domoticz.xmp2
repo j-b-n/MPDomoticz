@@ -6788,7 +6788,7 @@ The direct link to the plugin is here: https://github.com/j-b-n/MPDomoticz/raw/m
         <Param1 />
         <UpdateOption>OverwriteIfOlder</UpdateOption>
         <LocalFileName>..\..\Visual Studio 2013\Projects\MP-Domoticz\MP-Domoticz\images\icon.png</LocalFileName>
-        <ZipFileName>Installer{CopyFile}\{6faa81f0-fd8f-4ba0-afaf-356bf1949e83}-icon.png</ZipFileName>
+        <ZipFileName>Installer{CopyFile}\{831e1fb6-0d01-4fd2-8fe4-44da392f79d2}-icon.png</ZipFileName>
         <DestinationFilename />
       </FileItem>
     </Items>
