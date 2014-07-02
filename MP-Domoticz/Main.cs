@@ -910,6 +910,7 @@ namespace MP_Domoticz
 
             dlg.Add(Translation.Favourites);
             dlg.Add(Translation.Switches);
+            dlg.Add(Translation.Scenes);
             dlg.Add(Translation.Temperature);
             dlg.Add(Translation.Weather);
             dlg.Add(Translation.Utility);
