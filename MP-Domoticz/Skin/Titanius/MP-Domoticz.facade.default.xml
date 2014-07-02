@@ -19,15 +19,14 @@
       <type>label</type>
       <id>0</id>
       <label>#selecteditem</label>
-      <posX>800</posX>
+      <posX>1650</posX>
       <posY>1015</posY>
 	  <align>center</align>
     </control>
 
 	<control>
       <type>label</type>
-      <id>411</id>
-      <label>No data!</label>
+      <id>411</id>      
       <posX>500</posX>
       <posY>450</posY>
     </control>
