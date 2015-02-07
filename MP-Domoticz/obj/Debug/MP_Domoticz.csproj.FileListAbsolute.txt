@@ -1,0 +1,3 @@
+C:\Users\joabj85\Documents\GitHub\MPDomoticz\MP-Domoticz\obj\Debug\MP_Domoticz.csprojResolveAssemblyReference.cache
+C:\Users\joabj85\Documents\GitHub\MPDomoticz\MP-Domoticz\obj\Debug\MP_Domoticz.SetupForm.resources
+C:\Users\joabj85\Documents\GitHub\MPDomoticz\MP-Domoticz\obj\Debug\MP_Domoticz.csproj.GenerateResource.Cache
