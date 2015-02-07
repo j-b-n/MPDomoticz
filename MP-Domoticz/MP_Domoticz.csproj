@@ -109,6 +109,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="OxyPlot">
+      <HintPath>..\packages\OxyPlot.Core.2014.1.546\lib\portable-net4+sl4+wp71+win8\OxyPlot.dll</HintPath>
+    </Reference>
     <Reference Include="OxyPlot.WindowsForms">
       <HintPath>..\packages\OxyPlot.WindowsForms.2014.1.546\lib\net45\OxyPlot.WindowsForms.dll</HintPath>
     </Reference>
@@ -136,13 +139,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domoticz_icon.png" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Resources\Domoticz_icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Domoticz-icon.png" />
     <Content Include="Resources\Domoticz_icon.png" />
     <Content Include="Skin\Titan\Media\Domoticz\add.png" />
     <Content Include="Skin\Titan\Media\Domoticz\adjust48.png" />
