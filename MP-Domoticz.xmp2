@@ -3455,7 +3455,7 @@ Click Next to continue or Cancel to exit Setup.</Value>
     <Author>J-B-N</Author>
     <HomePage>https://github.com/j-b-n/MPDomoticz</HomePage>
     <ForumPage>https://forum.team-mediaportal.com/threads/mpdomoticz-a-plugin-for-domoticz.126633/</ForumPage>
-    <UpdateUrl>https://raw.githubusercontent.com/j-b-n/MPDomoticz/master/MP-Domoticz.xml</UpdateUrl>
+    <UpdateUrl>https://raw.githubusercontent.com/j-b-n/MPDomoticz/master/update.xml</UpdateUrl>
     <Version>
       <Major>0</Major>
       <Minor>0</Minor>
@@ -6822,7 +6822,7 @@ The direct link to the plugin is here: https://github.com/j-b-n/MPDomoticz/raw/m
       </FolderGroup>
     </FolderGroups>
     <ProjectFilename>MP-Domoticz.xmp2</ProjectFilename>
-    <UpdatePath1>.\MP-Domoticz.xml</UpdatePath1>
+    <UpdatePath1 />
     <UpdatePath2 />
     <UpdatePath3 />
   </ProjectSettings>
