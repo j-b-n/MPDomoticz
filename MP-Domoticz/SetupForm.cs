@@ -17,6 +17,8 @@ namespace MP_Domoticz
         [PluginIcons("MPDomoticz.Domoticz_icon.png", "MPDomoticz.Domoticz_icon.png")]
         private string _serveradress = "";
         private string _serverport = "";
+        private string _username = "";
+        private string _password = "";
         private int RefreshInterval = 0;
 
         public SetupForm()
@@ -25,6 +27,9 @@ namespace MP_Domoticz
             LoadSettings();
             textBox1.Text = _serveradress;
             textBox2.Text = _serverport;
+            UsernameTextBox.Text = _username;
+            PasswordTextBox.Text = _password;
+
             if (RefreshInterval < 5)
             {
                 RefreshInterval = 5;
@@ -32,11 +37,9 @@ namespace MP_Domoticz
             numericUpDown1.Value = RefreshInterval;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void UpdateInternalVars()
         {
-            //Save settings
-            
-            Uri uriResult; 
+            Uri uriResult;
             bool result = Uri.TryCreate(textBox1.Text, UriKind.Absolute, out uriResult) && uriResult.Scheme == Uri.UriSchemeHttp;
 
             if (result)
@@ -50,7 +53,13 @@ namespace MP_Domoticz
             }
             _serverport = textBox2.Text;
             RefreshInterval = (int)numericUpDown1.Value;
+            _username = UsernameTextBox.Text;
+            _password = PasswordTextBox.Text;
+        }
 
+        private void button1_Click(object sender, EventArgs e)
+        {                    
+            UpdateInternalVars();
             SaveSettings();
             this.Close();
         }
@@ -69,6 +78,8 @@ namespace MP_Domoticz
             {
                 _serveradress = xmlreader.GetValueAsString("MPDomoticz", "ServerAdress", "localhost");
                 _serverport = xmlreader.GetValueAsString("MPDomoticz", "ServerPort", "8080");
+                _username = xmlreader.GetValueAsString("MPDomoticz", "Username", "");
+                _password = xmlreader.GetValueAsString("MPDomoticz", "Password", "");
                 RefreshInterval = xmlreader.GetValueAsInt("MPDomoticz", "RefreshInterval", 30);
             }
         }
@@ -80,6 +91,8 @@ namespace MP_Domoticz
             {
                 xmlwriter.SetValue("MPDomoticz", "ServerAdress", _serveradress);
                 xmlwriter.SetValue("MPDomoticz", "ServerPort", _serverport);
+                xmlwriter.SetValue("MPDomoticz", "Username", _username);
+                xmlwriter.SetValue("MPDomoticz", "Password", _password);
                 xmlwriter.SetValue("MPDomoticz", "RefreshInterval", RefreshInterval);
             }
         }
@@ -91,9 +104,20 @@ namespace MP_Domoticz
         {
             linkLabel1.LinkVisited = true;
             System.Diagnostics.Process.Start("https://github.com/j-b-n/MPDomoticz");    
-
         }
 
-
+        private void TestConnectionbutton_Click(object sender, EventArgs e)
+        {
+            UpdateInternalVars();
+            DomoticzServer ds = new DomoticzServer();            
+            if(ds.InitServer(_serveradress, _serverport, _username, _password) == 1)
+            {
+                MessageBox.Show("Connection OK!");
+            }
+            else
+            {
+                MessageBox.Show("Connection failed!");
+            }
+        }
     }
 }

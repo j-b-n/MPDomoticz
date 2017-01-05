@@ -23,10 +23,11 @@ namespace MP_Domoticz
         private DomoticzServer currentDomoticzServer = null;
         private string _serveradress = "";
         private string _serverport = "";
+        private string _username = "";
+        private string _password = "";
         private DateTime RefreshTime = DateTime.Now.AddHours(-1); //for autorefresh
         private int RefreshInterval = 10; //in seconds
-        int DeviceIdx = -1;
-        private int ServerStatus = -1;
+        int DeviceIdx = -1;       
         private DomoticzServer.DeviceResponse DevResponse = null;
         private DomoticzServer.DeviceResponse AllDevResponse = null;
 
@@ -185,6 +186,17 @@ namespace MP_Domoticz
         private void RefreshSpinControl()
         {
             DevSpinCtrl.Reset();
+
+            if (currentDomoticzServer == null)
+            {
+                int ServerStatus = 0;
+                currentDomoticzServer = new DomoticzServer();
+                ServerStatus = currentDomoticzServer.InitServer(_serveradress, _serverport, _username, _password);
+
+                if (ServerStatus != 1)
+                    return;
+            }
+
             AllDevResponse = currentDomoticzServer.GetAllDevices();
             
             List<DomoticzServer.Device> res = null;
@@ -215,54 +227,75 @@ namespace MP_Domoticz
         {
             if (currentDomoticzServer == null)
             {
+                int ServerStatus = 1;
+
                 currentDomoticzServer = new DomoticzServer();
-                ServerStatus = currentDomoticzServer.InitServer(_serveradress, _serverport);
+                ServerStatus = currentDomoticzServer.InitServer(_serveradress, _serverport, _username, _password);
+
+                if (ServerStatus == 0)
+                {
+                    Log.Info("No connection to server " + _serveradress);
+                    GUIDialogOK dlgOK = (GUIDialogOK)GUIWindowManager.GetWindow(
+                       (int)GUIWindow.Window.WINDOW_DIALOG_OK);
+                    dlgOK.SetHeading("No connection");
+                    dlgOK.SetLine(1, "No connection to server " + _serveradress);
+                    dlgOK.SetLine(2, String.Empty);
+                    dlgOK.SetLine(3, String.Empty);
+                    dlgOK.DoModal(GUIDeviceDetails_WINDOW_ID);
+                    currentDomoticzServer = null;
+                    return;
+                }
+
+                if (ServerStatus == -1)
+                {
+                    Log.Info("Failed to authenticate to server " + _serveradress);
+                    GUIDialogOK dlgOK = (GUIDialogOK)GUIWindowManager.GetWindow(
+                       (int)GUIWindow.Window.WINDOW_DIALOG_OK);
+                    dlgOK.SetHeading("Failed to authenticate");
+                    dlgOK.SetLine(1, "Server: " + _serveradress);
+                    dlgOK.SetLine(2, "Username: '" + _username + "'");
+                    dlgOK.SetLine(3, "Password: '" + _password + "'");
+                    dlgOK.DoModal(GUIDeviceDetails_WINDOW_ID);
+                    currentDomoticzServer = null;
+                    return;
+                }
+
             }
 
-            if (ServerStatus == 0)
-            {
-                Log.Info("No connection to server " + _serveradress);
-                GUIDialogOK dlgOK = (GUIDialogOK)GUIWindowManager.GetWindow(
-                   (int)GUIWindow.Window.WINDOW_DIALOG_OK);
-                dlgOK.SetHeading("No connection");
-                dlgOK.SetLine(1, "No connection to server " + _serveradress);
-                dlgOK.SetLine(2, String.Empty);
-                dlgOK.SetLine(3, String.Empty);
-                dlgOK.DoModal(GUIDeviceDetails_WINDOW_ID);
-                currentDomoticzServer = null;
-                return;
-            }
 
             /// 
             if (AllDevResponse == null)
             {
-                RefreshSpinControl();
+                RefreshSpinControl();            
             }
-
+            
             //DevResponse = currentDomoticzServer.GetSingleDevice(DeviceIdx);
             DomoticzServer.Device dev = null;
 
-            foreach (DomoticzServer.Device d in AllDevResponse.result)
+            if (AllDevResponse != null)
             {
-                if (DeviceIdx == d.idx)
+                foreach (DomoticzServer.Device d in AllDevResponse.result)
                 {
-                    dev = d;
-                    break;
+                    if (DeviceIdx == d.idx)
+                    {
+                        dev = d;
+                        break;
+                    }
                 }
+
+
+                //DomoticzServer.Device dev = DevResponse.result[0];
+                SelectedDevice.Label = Translation.Lastupdate + ": " + dev.LastUpdate;
+
+                string desc = currentDomoticzServer.GetDeviceDescription(dev);
+                GUIPropertyManager.SetProperty("#MPDomoticz.Desc", desc);                
+
+                desc = Translation.Type + ": " + dev.Type + " " + dev.SubType;
+                GUIPropertyManager.SetProperty("#MPDomoticz.TypeInfo", desc);
+                
+                desc = currentDomoticzServer.GetIcon(dev);
+                GUIPropertyManager.SetProperty("#MPDomoticz.CurrentDeviceIcon", desc);                
             }
-
-            //DomoticzServer.Device dev = DevResponse.result[0];
-            SelectedDevice.Label = Translation.Lastupdate + ": " + dev.LastUpdate;
-
-            string desc = currentDomoticzServer.GetDeviceDescription(dev);
-            GUIPropertyManager.SetProperty("#MPDomoticz.Desc", desc);
-
-            desc = Translation.Type + ": " + dev.Type + " " + dev.SubType;
-            GUIPropertyManager.SetProperty("#MPDomoticz.TypeInfo", desc);
-
-            desc = currentDomoticzServer.GetIcon(dev);
-            GUIPropertyManager.SetProperty("#MPDomoticz.CurrentDeviceIcon", desc);
-
 
             DomoticzServer.SunSetRise sun = currentDomoticzServer.GetSunSet();
 
@@ -332,6 +365,8 @@ namespace MP_Domoticz
             {
                 _serveradress = xmlreader.GetValueAsString("MPDomoticz", "ServerAdress", "localhost");
                 _serverport = xmlreader.GetValueAsString("MPDomoticz", "ServerPort", "8080");
+                _username= xmlreader.GetValueAsString("MPDomoticz", "Username", "");
+                _password = xmlreader.GetValueAsString("MPDomoticz", "Password", "");
                 RefreshInterval = xmlreader.GetValueAsInt("MPDomoticz", "RefreshInterval", 30);
 
 

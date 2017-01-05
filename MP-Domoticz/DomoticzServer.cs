@@ -40,8 +40,69 @@ namespace MP_Domoticz
             }
         }
 
-        public int InitServer(string server, string port)
-        {            
+        static string _Username;
+        public static string Username
+        {
+            get
+            {
+                return _Username;
+            }
+            set
+            {
+                _Username = value;
+            }
+        }
+
+        static string _Password;
+        public static string Password
+        {
+            get
+            {
+                return _Password;
+            }
+            set
+            {
+                _Password = value;
+            }
+        }
+
+        public string getJSON(string url)
+        {
+            WebClient w = new WebClient();
+            string json_data = "";
+            try
+            {
+                Log.Debug("Get url: '" + url+"'");
+                if (Username != "" && Password != "")
+                {
+                    Log.Debug("Logging in with Username: '" + Username + "'");
+                    string _hash = Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(Username + ":" + Password));
+                    w.Headers.Add(HttpRequestHeader.Authorization,
+                    "Basic " + _hash);
+                }
+
+                w.Encoding = Encoding.UTF8;
+                json_data = w.DownloadString(url);
+            }
+            catch (WebException ex)
+            {
+                HttpWebResponse response = (System.Net.HttpWebResponse)ex.Response;
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    Log.Error("Unauthorized - Username: '" + Username + "' Password: '" + Password + "'");
+                    return "";
+                }
+                Log.Error("Exception: "+response.StatusCode.ToString());
+                return "";
+            }
+            Log.Debug("Got response: " + json_data.Length);
+            return json_data;
+        }
+
+        public int InitServer(string server, string port, string uname, string pass)
+        {
+            Username = uname;
+            Password = pass;
             ServerAddress = server;
             ServerPort = port;
 
@@ -58,20 +119,36 @@ namespace MP_Domoticz
                 url = ServerAddress;
             }
 
-            Log.Info("Establish connection " + url);
-            
+            string tmpUrl = url + "json.htm?type=command&param=getSunRiseSet";
+
+            ///
             WebClient w = new WebClient();
             string json_data = "";
             try
             {
-                w.Encoding = Encoding.UTF8;
-                json_data = w.DownloadString(url);
-            }
-            catch (Exception)
-            {
-                return 0;
-            }
+                Log.Debug("Get url: '" + tmpUrl + "'");
+                if (Username != "" && Password != "")
+                {
+                    Log.Debug("Logging in with Username: '" + Username + "'");
+                    string _hash = Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(Username + ":" + Password));
+                    w.Headers.Add(HttpRequestHeader.Authorization,
+                    "Basic " + _hash);
+                }
 
+                w.Encoding = Encoding.UTF8;
+                json_data = w.DownloadString(tmpUrl);
+            }
+            catch (WebException ex)
+            {
+                HttpWebResponse response = (System.Net.HttpWebResponse)ex.Response;
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    Log.Error("Unauthorized - Username: '" + Username + "' Password: '" + Password + "'");
+                    return -1;
+                }
+                Log.Error("Exception: " + response.StatusCode.ToString());
+                return 0;
+            }            
             return 1;            
         }
 
@@ -265,17 +342,9 @@ namespace MP_Domoticz
         public  SunSetRise GetSunSet()
         {            
             string tmpUrl = url + "json.htm?type=command&param=getSunRiseSet";
-            WebClient w = new WebClient();
-            string json_data = "";
-            try
-            {
-                w.Encoding = Encoding.UTF8;
-                json_data = w.DownloadString(tmpUrl);
-            }
-            catch (Exception) {                
-                return null;
-            }
 
+            string json_data = getJSON(tmpUrl);
+            
             JsonSerializer jsonSerializer = new JsonSerializer();
             return !string.IsNullOrEmpty(json_data) ?
                 (SunSetRise)JsonConvert.DeserializeObject(json_data, typeof(SunSetRise))
@@ -303,7 +372,7 @@ namespace MP_Domoticz
             public string Name { get; set; }
             public string Notifications { get; set; }
             public bool Protected { get; set; }
-            public int SignalLevel { get; set; }
+            public string SignalLevel { get; set; }
             public string SubType { get; set; }
             public double Temp { get; set; }
             public string Timers { get; set; }
@@ -362,18 +431,9 @@ namespace MP_Domoticz
 
 
         public DeviceResponse GetAllDevices()
-        {           
+        {
             string tmpUrl = url + "json.htm?type=devices&used=true&order=Name";
-            WebClient w = new WebClient();
-            string json_data = "";
-            try
-            {
-                w.Encoding = Encoding.UTF8;
-                json_data = w.DownloadString(tmpUrl);
-            }
-            catch (Exception) {
-                return null;
-            }
+            string json_data = getJSON(tmpUrl);
             
             JsonSerializer jsonSerializer = new JsonSerializer();
             return !string.IsNullOrEmpty(json_data) ?
@@ -385,18 +445,8 @@ namespace MP_Domoticz
         public DeviceResponse GetSingleDevice(int idx)
         {
             string tmpUrl = url + "json.htm?type=devices&rid="+idx;
-            WebClient w = new WebClient();
-            string json_data = "";
-            try
-            {
-                w.Encoding = Encoding.UTF8;
-                json_data = w.DownloadString(tmpUrl);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-
+            string json_data = getJSON(tmpUrl);
+            
             JsonSerializer jsonSerializer = new JsonSerializer();
             return !string.IsNullOrEmpty(json_data) ?
                 (DeviceResponse)JsonConvert.DeserializeObject(json_data, typeof(DeviceResponse))
@@ -413,17 +463,9 @@ namespace MP_Domoticz
         {
             string tmpUrl = url + "json.htm?"+
             "type=command&param=switchlight&idx="+idx+"&switchcmd="+command+"&level=0";
-            WebClient w = new WebClient();
-            string json_data = "";
-            try
-            {
-                w.Encoding = Encoding.UTF8;
-                json_data = w.DownloadString(tmpUrl);
-            }
-            catch (Exception) {
-                return null;
-            }
 
+            string json_data = getJSON(tmpUrl);
+            
             JsonSerializer jsonSerializer = new JsonSerializer();
             return !string.IsNullOrEmpty(json_data) ?
                 (Response)JsonConvert.DeserializeObject(json_data, typeof(Response))
@@ -463,18 +505,7 @@ namespace MP_Domoticz
         public LightLogResponse GetLightLog(int idx)
         {
             string tmpUrl = url + "json.htm?type=lightlog&idx=" + idx;
-            WebClient w = new WebClient();
-            string json_data = "";
-            try
-            {
-                w.Encoding = Encoding.UTF8;
-                json_data = w.DownloadString(tmpUrl);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-
+            string json_data = getJSON(tmpUrl);
             JsonSerializer jsonSerializer = new JsonSerializer();
             return !string.IsNullOrEmpty(json_data) ?
                 (LightLogResponse)JsonConvert.DeserializeObject(json_data, typeof(LightLogResponse))
@@ -533,18 +564,8 @@ namespace MP_Domoticz
         {
             string tmpUrl = url + "json.htm?type=graph&" +
                 "sensor=" + sensortype + "&idx=" + idx + "&range=" + range;
-            WebClient w = new WebClient();
-            string json_data = "";
-            try
-            {
-                w.Encoding = Encoding.UTF8;
-                json_data = w.DownloadString(tmpUrl);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-
+            string json_data = getJSON(tmpUrl);
+            
             JsonSerializer jsonSerializer = new JsonSerializer();
             return !string.IsNullOrEmpty(json_data) ?
                 (GraphResponse)JsonConvert.DeserializeObject(json_data, typeof(GraphResponse))

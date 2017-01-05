@@ -84,6 +84,8 @@ namespace MP_Domoticz
         private DomoticzServer currentDomoticzServer = null;
         private string _serveradress = "";
         private string _serverport = "";
+        private string _username = "";
+        private string _password = "";
 
         private bool IsNetworkAvailable = false;        
         DomoticzServer.DeviceResponse DevResponse = null;
@@ -228,6 +230,8 @@ namespace MP_Domoticz
             {                
                 _serveradress = xmlreader.GetValueAsString("MPDomoticz", "ServerAdress", "localhost");
                 _serverport = xmlreader.GetValueAsString("MPDomoticz", "ServerPort", "8080");
+                _username = xmlreader.GetValueAsString("MPDomoticz", "Username", "");
+                _password = xmlreader.GetValueAsString("MPDomoticz", "Password", "");
                 RefreshInterval = xmlreader.GetValueAsInt("MPDomoticz", "RefreshInterval", 30);
                 
                 
@@ -260,6 +264,8 @@ namespace MP_Domoticz
             {
                 xmlwriter.SetValue("MPDomoticz", "ServerAdress", _serveradress);
                 xmlwriter.SetValue("MPDomoticz", "ServerPort", _serverport);
+                xmlwriter.SetValue("MPDomoticz", "Username", _username);
+                xmlwriter.SetValue("MPDomoticz", "Password", _password);
                 xmlwriter.SetValue("MPDomoticz", "RefreshInterval", RefreshInterval);
                 xmlwriter.SetValue("MPDomoticz", "SortBy", CurrentSortBy);
                 if (CurrentSortAsc)
@@ -368,7 +374,7 @@ namespace MP_Domoticz
 
                 case GUIMessage.MessageType.GUI_MSG_WINDOW_DEINIT:
                     {
-                        Log.Info("MP-Domoticz: GUI_MSG_WINDOW_DEINIT");
+                        Log.Debug("MP-Domoticz: GUI_MSG_WINDOW_DEINIT");
                         //SaveSettings();
                     }
                     break;
@@ -533,31 +539,46 @@ namespace MP_Domoticz
         /// </summary>
         protected void Refresh()
         {
-            int ServerStatus = -1;
             if (currentDomoticzServer == null)
             {
-                currentDomoticzServer = new DomoticzServer();
-                ServerStatus = currentDomoticzServer.InitServer(_serveradress,_serverport);                
+                int ServerStatus = 1;
+
+                currentDomoticzServer = new DomoticzServer();             
+                ServerStatus = currentDomoticzServer.InitServer(_serveradress,_serverport, _username, _password);
+
+                if (ServerStatus == 0)
+                {
+                    Log.Info("No connection to server " + _serveradress);
+                    GUIDialogOK dlgOK = (GUIDialogOK)GUIWindowManager.GetWindow(
+                       (int)GUIWindow.Window.WINDOW_DIALOG_OK);
+                    dlgOK.SetHeading("No connection");
+                    dlgOK.SetLine(1, "No connection to server " + _serveradress);
+                    dlgOK.SetLine(2, String.Empty);
+                    dlgOK.SetLine(3, String.Empty);
+                    dlgOK.DoModal(WINDOW_ID);
+                    currentDomoticzServer = null;
+                    return;
+                }
+
+                if (ServerStatus == -1)
+                {
+                    Log.Info("Failed to authenticate to server " + _serveradress);
+                    GUIDialogOK dlgOK = (GUIDialogOK)GUIWindowManager.GetWindow(
+                       (int)GUIWindow.Window.WINDOW_DIALOG_OK);
+                    dlgOK.SetHeading("Failed to authenticate");
+                    dlgOK.SetLine(1, "Server: " + _serveradress);
+                    dlgOK.SetLine(2, "Username: '" + _username + "'");
+                    dlgOK.SetLine(3, "Password: '" + _password + "'");
+                    dlgOK.DoModal(WINDOW_ID);
+                    currentDomoticzServer = null;
+                    return;
+                }
             }
 
-            if(ServerStatus == 0 )
-            {
-                Log.Info("No connection to server "+_serveradress);
-                GUIDialogOK dlgOK = (GUIDialogOK)GUIWindowManager.GetWindow(
-                   (int)GUIWindow.Window.WINDOW_DIALOG_OK);
-                dlgOK.SetHeading("No connection");
-                dlgOK.SetLine(1, "No connection to server " + _serveradress);
-                dlgOK.SetLine(2, String.Empty);
-                dlgOK.SetLine(3, String.Empty);
-                dlgOK.DoModal(WINDOW_ID);                
-                currentDomoticzServer = null;
-                return;
-            }
-            
+
             DevResponse = null;
-
-            DomoticzServer.SunSetRise sun = currentDomoticzServer.GetSunSet();
-
+            
+            DomoticzServer.SunSetRise sun = currentDomoticzServer.GetSunSet();            
             if (sun != null)
             {
                 string str = Translation.Servertime + ": " + sun.ServerTime + " " +

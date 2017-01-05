@@ -236,7 +236,6 @@ namespace MP_Domoticz
                         linearAxis2.Minimum = minimum;
                     }
 
-
                     lineSeriesAvg.Smooth = true;
                     lineSeriesMin.Smooth = true;
                     lineSeriesMax.Smooth = true;
@@ -245,9 +244,8 @@ namespace MP_Domoticz
                     plotModel1.Series.Add(lineSeriesMax);
                     break;
 
-                case "Rain":
-                    GR = DS.GetGraphData(idx, "rain", "week");
-
+                case "Rain":                    
+                    GR = DS.GetGraphData(idx, "rain", "week");                    
                     plotModel1.LegendBorderThickness = 0;
                     plotModel1.LegendOrientation = LegendOrientation.Horizontal;
                     plotModel1.LegendPlacement = LegendPlacement.Outside;
@@ -265,20 +263,18 @@ namespace MP_Domoticz
 
                     var columnSeries1 = new ColumnSeries();
                     columnSeries1.StrokeThickness = 1;
-
-
-                    foreach (DomoticzServer.GraphResult res in GR.result)
-                    {
-                        DateTime dt = Convert.ToDateTime(res.d);
-                        categoryAxis1.Labels.Add(dt.ToString("dd.MMM"));
-                        columnSeries1.Items.Add(new ColumnItem(res.mm, -1));
-                    }
+                    
+                    if (GR.result != null)
+                        foreach (DomoticzServer.GraphResult res in GR.result)
+                        {
+                            DateTime dt = Convert.ToDateTime(res.d);
+                            categoryAxis1.Labels.Add(dt.ToString("dd.MMM"));
+                            columnSeries1.Items.Add(new ColumnItem(res.mm, -1));                         
+                        }
 
                     plotModel1.Axes.Add(categoryAxis1);
-
-                    plotModel1.Series.Add(columnSeries1);
+                    plotModel1.Series.Add(columnSeries1);                    
                     break;
-
 
                 case "lightlog":                    
                     var LR = DS.GetLightLog(idx);                    
